@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<meta content="mobile_tab" name="shell-type"/>
+<title>Schooly - Student Profile</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary": "#006e2d",
+            "surface-container-highest": "#dae2fd",
+            "surface-variant": "#dae2fd",
+            "error-container": "#ffdad6",
+            "on-surface": "#131b2e",
+            "outline-variant": "#bfc7d2",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-container": "#cc4900",
+            "inverse-surface": "#283044",
+            "on-secondary-container": "#007230",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#002109",
+            "on-secondary": "#ffffff",
+            "primary-fixed": "#cce5ff",
+            "secondary-fixed-dim": "#62df7d",
+            "on-primary-container": "#fdfcff",
+            "on-error": "#ffffff",
+            "secondary-fixed": "#7ffc97",
+            "on-tertiary": "#ffffff",
+            "surface-dim": "#d2d9f4",
+            "surface-container": "#eaedff",
+            "surface-container-low": "#f2f3ff",
+            "primary-container": "#007bb9",
+            "on-primary-fixed": "#001d31",
+            "tertiary": "#a33900",
+            "on-error-container": "#93000a",
+            "inverse-on-surface": "#eef0ff",
+            "on-surface-variant": "#3f4850",
+            "secondary-container": "#7cf994",
+            "on-tertiary-container": "#fffbff",
+            "surface-tint": "#006398",
+            "inverse-primary": "#93ccff",
+            "primary-fixed-dim": "#93ccff",
+            "tertiary-fixed-dim": "#ffb599",
+            "on-tertiary-fixed": "#370e00",
+            "error": "#ba1a1a",
+            "on-primary-fixed-variant": "#004b73",
+            "on-background": "#131b2e",
+            "surface": "#faf8ff",
+            "tertiary-fixed": "#ffdbce",
+            "on-secondary-fixed-variant": "#005320",
+            "on-tertiary-fixed-variant": "#7f2b00",
+            "surface-container-high": "#e2e7ff",
+            "outline": "#707881",
+            "background": "#faf8ff",
+            "primary": "#006194",
+            "surface-bright": "#faf8ff"
+          },
+          borderRadius: {
+            "DEFAULT": "1rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "gutter": "1rem",
+            "margin": "1.25rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.25rem",
+            "space-xl": "1.75rem"
+          },
+          fontFamily: {
+            "label-sm": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "body-md": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "label-lg": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"]
+          },
+          fontSize: {
+            "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.02em", fontWeight: "700" }],
+            "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }],
+            "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            "display-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "label-lg": ["14px", { lineHeight: "20px", fontWeight: "600" }],
+            "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "700" }],
+            "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }],
+            "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }],
+            "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body {
+        width: 100%;
+        min-height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        overscroll-behavior-y: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      .pt-safe {
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-background font-body-md text-body-md text-on-surface antialiased flex flex-col min-h-screen">
+<!-- Shell Header -->
+<header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,97,148,0.04)]">
+<!-- Status bar simulation -->
+<div class="flex justify-between items-center px-margin pt-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="tracking-tight font-bold text-on-surface">9:41</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[15px]">wifi</span>
+<span class="material-symbols-outlined text-[17px]">battery_full</span>
+</div>
+</div>
+<!-- Main Shell Top Navigation -->
+<div class="h-16 px-margin flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<img alt="Schooly Logo" class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1VhmYOOgfjA8H4EWrvi20LrXSc2KriGgLNrcG8lnpaje84tI8QE36rdXfvRWvEgxrrNQv27CuyUp1XlHwhUY7FlWhfs6L6VCzJF1jH4HPltVZkGtOrnuQij9ZcuZapCQNVPEWtmZrySiZDZxYqhJX7Ibt6wyJHlGS1YG1M2qegNL5oXVkKDkzXx1dmmv2NnRr5fHnp9bR164btk2sUnIiUvpKPy72ljU4rY7fxFz4jNdy3mxheX9z6305R9"/>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Schooly Portal</span>
+<h1 class="font-headline-sm text-headline-sm text-on-surface truncate">My Profile</h1>
+</div>
+</div>
+<div class="flex items-center gap-space-xs shrink-0">
+<button aria-label="Notifications" class="w-11 h-11 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors relative">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-tertiary-container"></span>
+</button>
+<button aria-label="Menu" class="w-11 h-11 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[22px]">widgets</span>
+</button>
+<div class="pl-space-xs flex items-center">
+<img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-[0_2px_6px_rgba(0,97,148,0.15)] ring-1.5 ring-primary/20" src="https://lh3.googleusercontent.com/aida/AEtjO1VQiCHfd7iK8pzisg1owfzgfwtpUKAGmWgU5SfDNav87dzK4djp4i8cxBtsdm7UTCnBV_eMDzOwIimRgGN5hlVQTWIwtMRejvnawq0E-fbbbPuVPcYw_xOOZwvB53gfEW5DAbhov3Xep4NFUXqSv4veXfOwZMBRe6vcbDrfI7OWcIOqcWh8c-3cE1UW8udwpXw97lVSxXSMhkNDEzn7vnYuUXp5dQSYbZKC_EmJLsiXplqwMHHey9Zr8z5S"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Scrollable Body Content -->
+<main class="flex-1 flex flex-col relative w-full pt-16 pb-24 bg-background px-margin">
+<div class="flex flex-col w-full pb-8 space-y-space-lg">
+<!-- Secondary Sub-Header Action Bar -->
+<div class="flex items-center justify-between pt-2">
+<button aria-label="Go Back" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface shadow-sm active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]">arrow_back_ios_new</span>
+</button>
+<div class="flex flex-col items-center">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Student Profile</span>
+<span class="font-label-sm text-label-sm text-outline">Academic Year 2026–27</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button aria-label="Profile Settings" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary shadow-sm hover:bg-surface-container-high transition-colors active:scale-95" type="button">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+</div>
+</div>
+<!-- AI Assistant Query Capsule Pill -->
+<div class="relative w-full">
+<div class="flex items-center justify-between bg-surface-container-lowest rounded-full p-1.5 pl-4 shadow-[0_4px_20px_rgba(0,97,148,0.06)] hover:shadow-md transition-shadow">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-7 h-7 rounded-full bg-primary-fixed flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[17px]">smart_toy</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant truncate">Ask UON to generate Student ID Card or Certificate</span>
+</div>
+<button aria-label="Run AI Action" class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_4px_12px_rgba(0,97,148,0.3)] active:scale-90 transition-transform shrink-0" type="button">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+</button>
+</div>
+</div>
+<!-- Student Hero Identity Card -->
+<div class="bg-surface-container-lowest rounded-3xl p-space-lg shadow-[0_8px_24px_-4px_rgba(0,97,148,0.08)] flex flex-col items-center text-center relative overflow-hidden">
+<!-- Ambient radial glow -->
+<div class="absolute -top-12 -right-12 w-40 h-40 bg-primary-fixed/40 rounded-full blur-2xl pointer-events-none"></div>
+<div class="absolute -bottom-10 -left-10 w-32 h-32 bg-secondary-fixed/25 rounded-full blur-xl pointer-events-none"></div>
+<!-- Large Avatar with Camera Badge & Online Dot -->
+<div class="relative mb-3 flex items-center justify-center"><div class="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-primary via-primary-container to-secondary-container shadow-[0_4px_16px_rgba(0,97,148,0.18)]"><img alt="Aarav Sharma" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1VQiCHfd7iK8pzisg1owfzgfwtpUKAGmWgU5SfDNav87dzK4djp4i8cxBtsdm7UTCnBV_eMDzOwIimRgGN5hlVQTWIwtMRejvnawq0E-fbbbPuVPcYw_xOOZwvB53gfEW5DAbhov3Xep4NFUXqSv4veXfOwZMBRe6vcbDrfI7OWcIOqcWh8c-3cE1UW8udwpXw97lVSxXSMhkNDEzn7vnYuUXp5dQSYbZKC_EmJLsiXplqwMHHey9Zr8z5S"/></div><span class="absolute top-1 right-2.5 w-4 h-4 rounded-full bg-secondary ring-2 ring-surface-container-lowest" title="Active Status"></span><button aria-label="Change Photo" class="absolute bottom-0 right-1 w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_2px_8px_rgba(0,97,148,0.35)] active:scale-90 transition-transform" type="button"><span class="material-symbols-outlined text-[16px]">photo_camera</span></button></div>
+<!-- Student Full Name -->
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">Aarav Sharma</h2>
+<!-- Status & Class Badges Row -->
+<div class="flex items-center gap-2 mt-2">
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-label-md">Roll ID - 21</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="px-3 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-md text-label-md font-bold">Class 10-A</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            Active
+          </span>
+</div>
+<!-- Admission Details -->
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2 max-w-[300px]">
+          Adm No: <span class="font-bold text-on-surface">SCH-2024-884</span> • Delhi Public High School
+        </p>
+<!-- Digital Student ID Action Button / Pill -->
+<button class="mt-4 w-full flex items-center justify-between px-4 py-2.5 rounded-2xl bg-surface-container-low hover:bg-surface-container text-on-surface transition-all active:scale-[0.99] border border-outline-variant/30" onclick="openDrawer()" type="button">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[20px] text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<div class="text-left">
+<span class="font-label-md text-label-md text-on-surface font-bold block leading-tight">Digital Student ID Verified</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Tap to inspect digital card</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-primary font-label-sm text-label-sm font-bold">
+<span class="">View ID Pass</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</button>
+</div>
+<!-- Profile Categories Section -->
+<div class="flex flex-col space-y-space-sm">
+<div class="flex items-center justify-between px-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Profile Categories</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">7 Sections</span>
+</div>
+<!-- Inset List Cards Container -->
+<div class="flex flex-col gap-2.5"><button class="w-full text-left bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-2xl p-space-md shadow-[0_4px_16px_rgba(0,97,148,0.04)] flex items-center justify-between group active:scale-[0.99]" onclick="openDrawer()" type="button"><div class="flex items-center gap-space-md min-w-0"><div class="w-11 h-11 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[22px]">person</span></div><div class="flex flex-col min-w-0"><span class="font-label-lg text-label-lg text-on-surface font-bold truncate group-hover:text-primary transition-colors">Personal Information</span><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Full Name, DOB, Gender, Blood Group (O+), ID</span></div></div><span class="material-symbols-outlined text-[20px] text-outline shrink-0 ml-2 group-hover:text-primary group-hover:translate-x-0.5 transition-all">chevron_right</span></button><button class="w-full text-left bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-2xl p-space-md shadow-[0_4px_16px_rgba(0,97,148,0.04)] flex items-center justify-between group active:scale-[0.99]" onclick="openDrawer()" type="button"><div class="flex items-center gap-space-md min-w-0"><div class="w-11 h-11 rounded-2xl bg-surface-container-high text-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[22px]">school</span></div><div class="flex flex-col min-w-0"><span class="font-label-lg text-label-lg text-on-surface font-bold truncate group-hover:text-primary transition-colors">Academic Details</span><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Session 2026–27, Class 10-A, House Falcon, CBSE</span></div></div><span class="material-symbols-outlined text-[20px] text-outline shrink-0 ml-2 group-hover:text-primary group-hover:translate-x-0.5 transition-all">chevron_right</span></button><button class="w-full text-left bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-2xl p-space-md shadow-[0_4px_16px_rgba(0,97,148,0.04)] flex items-center justify-between group active:scale-[0.99]" onclick="openDrawer()" type="button"><div class="flex items-center gap-space-md min-w-0"><div class="w-11 h-11 rounded-2xl bg-secondary-fixed/50 text-secondary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[22px]">family_restroom</span></div><div class="flex flex-col min-w-0"><span class="font-label-lg text-label-lg text-on-surface font-bold truncate group-hover:text-primary transition-colors">Parent &amp; Guardian</span><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Rajesh Sharma (Father), Sunita Sharma (Mother)</span></div></div><span class="material-symbols-outlined text-[20px] text-outline shrink-0 ml-2 group-hover:text-primary group-hover:translate-x-0.5 transition-all">chevron_right</span></button><button class="w-full text-left bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-2xl p-space-md shadow-[0_4px_16px_rgba(0,97,148,0.04)] flex items-center justify-between group active:scale-[0.99]" onclick="openDrawer()" type="button"><div class="flex items-center gap-space-md min-w-0"><div class="w-11 h-11 rounded-2xl bg-tertiary-fixed text-tertiary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[22px]">location_on</span></div><div class="flex flex-col min-w-0"><span class="font-label-lg text-label-lg text-on-surface font-bold truncate group-hover:text-primary transition-colors">Address Details</span><span class="font-body-sm text-body-sm text-on-surface-variant truncate">B-402, Green Park Avenue, New Delhi, PIN 110016</span></div></div><span class="material-symbols-outlined text-[20px] text-outline shrink-0 ml-2 group-hover:text-primary group-hover:translate-x-0.5 transition-all">chevron_right</span></button><button class="w-full text-left bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-2xl p-space-md shadow-[0_4px_16px_rgba(0,97,148,0.04)] flex items-center justify-between group active:scale-[0.99]" onclick="openDrawer()" type="button"><div class="flex items-center gap-space-md min-w-0"><div class="w-11 h-11 rounded-2xl bg-surface-container text-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[22px]">contact_phone</span></div><div class="flex flex-col min-w-0"><span class="font-label-lg text-label-lg text-on-surface font-bold truncate group-hover:text-primary transition-colors">Contact Information</span><span class="font-body-sm text-body-sm text-on-surface-variant truncate">student.aarav@schooly.edu • +91 98765 43210</span></div></div><span class="material-symbols-outlined text-[20px] text-outline shrink-0 ml-2 group-hover:text-primary group-hover:translate-x-0.5 transition-all">chevron_right</span></button><button class="w-full text-left bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-2xl p-space-md shadow-[0_4px_16px_rgba(0,97,148,0.04)] flex items-center justify-between group active:scale-[0.99]" onclick="openDrawer()" type="button"><div class="flex items-center gap-space-md min-w-0"><div class="w-11 h-11 rounded-2xl bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[22px]">apartment</span></div><div class="flex flex-col min-w-0"><span class="font-label-lg text-label-lg text-on-surface font-bold truncate group-hover:text-primary transition-colors">School &amp; Campus Info</span><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Delhi Public High School, Main Campus, Branch #04</span></div></div><span class="material-symbols-outlined text-[20px] text-outline shrink-0 ml-2 group-hover:text-primary group-hover:translate-x-0.5 transition-all">chevron_right</span></button><button class="w-full text-left bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-2xl p-space-md shadow-[0_4px_16px_rgba(0,97,148,0.04)] flex items-center justify-between group active:scale-[0.99] border border-outline-variant/30" type="button"><div class="flex items-center gap-space-md min-w-0"><div class="w-11 h-11 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center shrink-0 shadow-sm"><span class="material-symbols-outlined text-[22px]">verified_user</span></div><div class="flex flex-col min-w-0"><div class="flex items-center gap-2"><span class="font-label-lg text-label-lg text-on-surface font-bold truncate group-hover:text-primary transition-colors">Account &amp; Security</span><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-[10px] font-bold">Protected</span></div><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Password, 2FA, Login Devices &amp; Privacy</span></div></div><span class="material-symbols-outlined text-[20px] text-outline shrink-0 ml-2 group-hover:text-primary group-hover:translate-x-0.5 transition-all">chevron_right</span></button></div>
+</div>
+<!-- Account & Security Section -->
+<div class="flex flex-col space-y-space-sm pt-1">
+<div class="px-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Account &amp; Security</span>
+</div>
+<!-- Clean Grouped Card Container -->
+<div class="overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0_4px_16px_rgba(0,97,148,0.04)] border border-surface-container-low">
+<!-- Item 1: Change Password -->
+<button class="w-full px-space-md py-3.5 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">key</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-medium">Change Password</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-outline">chevron_right</span>
+</button>
+<div class="h-[1px] bg-surface-container-low mx-4"></div>
+<!-- Item 2: Notification Preferences -->
+<button class="w-full px-space-md py-3.5 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">notifications_active</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-medium">Notification Preferences</span>
+</div>
+<div class="flex items-center gap-1.5 text-primary font-label-sm text-label-sm">
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-bold text-[10px]">Enabled</span>
+<span class="material-symbols-outlined text-[18px] text-outline">chevron_right</span>
+</div>
+</button>
+<div class="h-[1px] bg-surface-container-low mx-4"></div>
+<!-- Item 3: Login Devices & Security -->
+<button class="w-full px-space-md py-3.5 flex items-center justify-between hover:bg-surface-container-low transition-colors text-left" type="button">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-medium">Login Devices &amp; Security</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">1 Active Device • Android</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="material-symbols-outlined text-[18px] text-outline">chevron_right</span>
+</div>
+</button>
+</div>
+<!-- Log Out Soft Red Danger Button -->
+<button class="w-full mt-2 py-3.5 px-4 rounded-2xl bg-error-container text-on-error-container hover:bg-error-container/80 transition-colors flex items-center justify-center gap-2 font-label-md text-label-md active:scale-[0.99] font-bold shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="">Log Out Account</span>
+</button>
+</div>
+<!-- Detail Drawer Modal (Master Record Preview) -->
+<div class="fixed inset-0 z-50 flex flex-col justify-end bg-inverse-surface/40 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none" id="personal-drawer">
+<div class="flex-1 w-full" onclick="closeDrawer()"></div>
+<div class="w-full bg-surface-container-lowest rounded-t-3xl p-space-lg shadow-2xl transform transition-transform duration-300 translate-y-full max-h-[85vh] overflow-y-auto">
+<div class="flex justify-center mb-space-sm">
+<div class="w-12 h-1.5 rounded-full bg-surface-container-high"></div>
+</div>
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-2.5">
+<div class="w-10 h-10 rounded-2xl bg-primary-fixed text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">person</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-bold">Personal Information</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Verified Student Master Record</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant" onclick="closeDrawer()" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="flex items-center gap-2 p-3 rounded-2xl bg-surface-container text-on-surface-variant mb-space-md">
+<span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="font-body-sm text-body-sm">View Only — Official registrar records can only be updated by the School Administrative Office.</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="p-3 bg-surface-container-low rounded-2xl">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Full Legal Name</span>
+<p class="font-label-lg text-label-lg text-on-surface font-bold mt-0.5">Aarav Sharma</p>
+</div>
+<div class="p-3 bg-surface-container-low rounded-2xl">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Date of Birth</span>
+<p class="font-label-lg text-label-lg text-on-surface font-bold mt-0.5">14 Aug 2010</p>
+</div>
+<div class="p-3 bg-surface-container-low rounded-2xl">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Gender</span>
+<p class="font-label-lg text-label-lg text-on-surface font-bold mt-0.5">Male</p>
+</div>
+<div class="p-3 bg-surface-container-low rounded-2xl">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Blood Group</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">O Positive</span>
+<span class="px-1.5 py-0.5 text-[10px] rounded bg-tertiary-fixed text-on-tertiary-fixed-variant font-bold">O+</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded-2xl">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Admission No</span>
+<p class="font-label-lg text-label-lg text-on-surface font-bold mt-0.5">SCH-2024-884</p>
+</div>
+<div class="p-3 bg-surface-container-low rounded-2xl">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">System Student ID</span>
+<p class="font-label-lg text-label-lg text-primary font-bold mt-0.5">STU-99214</p>
+</div>
+<div class="p-3 bg-surface-container-low rounded-2xl">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Class Roll No</span>
+<p class="font-label-lg text-label-lg text-on-surface font-bold mt-0.5">21 (Section A)</p>
+</div>
+<div class="p-3 bg-surface-container-low rounded-2xl">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">National Identity</span>
+<p class="font-label-lg text-label-lg text-on-surface font-bold mt-0.5">XXXX-XXXX-4912</p>
+</div>
+</div>
+<div class="mt-space-lg flex gap-space-sm">
+<button class="flex-1 py-3.5 px-4 rounded-full bg-primary text-on-primary font-label-lg text-label-lg font-bold shadow-[0_6px_16px_rgba(0,97,148,0.25)] active:scale-95 transition-transform text-center" onclick="closeDrawer()" type="button">
+              Done Viewing
+            </button>
+<button class="w-12 h-12 rounded-full bg-surface-container text-primary flex items-center justify-center hover:bg-surface-container-high transition-colors" title="Request Correction" type="button">
+<span class="material-symbols-outlined text-[22px]">contact_support</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Persistent Schooly Bottom Navigation Shell Bar -->
+<nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,97,148,0.06)]" data-active-classes="text-primary font-bold">
+<div class="relative flex justify-around items-center h-20 px-space-sm">
+<a class="flex flex-col items-center justify-center w-14 h-14 rounded-full text-on-surface-variant transition-all hover:text-primary" data-path="home" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="font-label-sm text-label-sm mt-0.5">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center w-14 h-14 rounded-full text-on-surface-variant transition-all hover:text-primary" data-path="timetable" href="#">
+<span class="material-symbols-outlined text-[24px]">calendar_today</span>
+<span class="font-label-sm text-label-sm mt-0.5">Timetable</span>
+</a>
+<!-- Raised Center Floating AI Button -->
+<div class="relative flex flex-col items-center -top-3">
+<a aria-label="Schooly AI Assistant" class="w-14 h-14 rounded-full bg-primary text-on-primary shadow-[0_8px_18px_rgba(0,97,148,0.35)] flex items-center justify-center transform active:scale-95 transition-transform" data-path="ai-assistant" href="#">
+<span class="material-symbols-outlined text-[28px]">smart_toy</span>
+</a>
+<span class="font-label-sm text-label-sm text-primary font-bold mt-1">Ask AI</span>
+</div>
+<a class="flex flex-col items-center justify-center w-14 h-14 rounded-full text-on-surface-variant transition-all hover:text-primary" data-path="exams" href="#">
+<span class="material-symbols-outlined text-[24px]">assignment</span>
+<span class="font-label-sm text-label-sm mt-0.5">Exams</span>
+</a>
+<a aria-current="page" class="flex flex-col items-center justify-center w-14 h-14 rounded-full transition-all text-primary font-bold" data-path="more" href="#">
+<span class="material-symbols-outlined text-[24px]">grid_view</span>
+<span class="font-label-sm text-label-sm mt-0.5">More</span>
+</a>
+</div>
+</nav>
+<script>
+    function openDrawer() {
+      const drawer = document.getElementById('personal-drawer');
+      if (!drawer) return;
+      drawer.classList.remove('opacity-0', 'pointer-events-none');
+      drawer.classList.add('opacity-100', 'pointer-events-auto');
+      const panel = drawer.querySelector('.max-h-\\[85vh\\]');
+      if (panel) {
+        panel.classList.remove('translate-y-full');
+        panel.classList.add('translate-y-0');
+      }
+    }
+
+    function closeDrawer() {
+      const drawer = document.getElementById('personal-drawer');
+      if (!drawer) return;
+      const panel = drawer.querySelector('.max-h-\\[85vh\\]');
+      if (panel) {
+        panel.classList.remove('translate-y-0');
+        panel.classList.add('translate-y-full');
+      }
+      setTimeout(() => {
+        drawer.classList.remove('opacity-100', 'pointer-events-auto');
+        drawer.classList.add('opacity-0', 'pointer-events-none');
+      }, 250);
+    }
+  </script>
+</body></html>

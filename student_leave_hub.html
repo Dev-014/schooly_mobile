@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><title>Schooly - Student Leave Module (Copy)</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "inverse-primary": "#93ccff", "tertiary": "#a33900", "surface-bright": "#faf8ff", "primary-container": "#007bb9", "outline": "#707881", "primary": "#006194", "surface-container-highest": "#dae2fd", "surface-container-low": "#f2f3ff", "surface-container-high": "#e2e7ff", "on-secondary": "#ffffff", "primary-fixed": "#cce5ff", "on-secondary-fixed-variant": "#005320", "background": "#faf8ff", "inverse-surface": "#283044", "surface-container-lowest": "#ffffff", "on-surface-variant": "#3f4850", "on-error-container": "#93000a", "on-primary-fixed": "#001d31", "on-tertiary-container": "#fffbff", "surface": "#faf8ff", "inverse-on-surface": "#eef0ff", "error-container": "#ffdad6", "outline-variant": "#bfc7d2", "on-tertiary-fixed-variant": "#7f2b00", "on-background": "#131b2e", "on-tertiary": "#ffffff", "secondary-fixed-dim": "#62df7d", "on-primary-container": "#fdfcff", "tertiary-container": "#cc4900", "on-primary": "#ffffff", "secondary-fixed": "#7ffc97", "on-secondary-fixed": "#002109", "secondary-container": "#7cf994", "on-tertiary-fixed": "#370e00", "secondary": "#006e2d", "surface-dim": "#d2d9f4", "surface-container": "#eaedff", "surface-tint": "#006398", "on-primary-fixed-variant": "#004b73", "surface-variant": "#dae2fd", "tertiary-fixed-dim": "#ffb599", "error": "#ba1a1a", "on-error": "#ffffff", "primary-fixed-dim": "#93ccff", "tertiary-fixed": "#ffdbce", "on-surface": "#131b2e", "on-secondary-container": "#007230" }, borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, spacing: { "space-xl": "1.75rem", "space-xs": "0.25rem", "space-md": "1rem", "margin": "1.25rem", "space-lg": "1.25rem", "space-sm": "0.5rem", "gutter": "1rem" }, fontFamily: { "label-lg": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "display-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"] }, fontSize: { "label-lg": ["14px", { lineHeight: "20px", fontWeight: "600" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "700" }], "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.02em", fontWeight: "700" }], "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }], "display-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }] } } } };</script><style>@layer base{html,body{width:100vw;min-height:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-24 px-margin flex flex-col justify-center"><div class="flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><img alt="Schooly brand logo with checkmark shield icon and modern bold typography" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VhmYOOgfjA8H4EWrvi20LrXSc2KriGgLNrcG8lnpaje84tI8QE36rdXfvRWvEgxrrNQv27CuyUp1XlHwhUY7FlWhfs6L6VCzJF1jH4HPltVZkGtOrnuQij9ZcuZapCQNVPEWtmZrySiZDZxYqhJX7Ibt6wyJHlGS1YG1M2qegNL5oXVkKDkzXx1dmmv2NnRr5fHnp9bR164btk2sUnIiUvpKPy72ljU4rY7fxFz4jNdy3mxheX9z6305R9"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight leading-none">Schooly</span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium tracking-wide mt-0.5">STUDENT ERP</span></div></div><div class="flex items-center gap-space-sm"><button aria-label="Notifications" class="relative w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest"></span></button><div class="flex items-center gap-2 pl-1"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida/AEtjO1WVSdKO-CQRqpuWCH61ZkeXLZcXYMdj3CL84fDzQK02GcstSs2rh6BKy53qh_Ts7fD0s94LGYktA8Z5uT2LwyJ_oKvqu5ZVKu6VqKTV0Mvpt5Ye6vLVJ-IKJTjONAdXqqz-GODPZy6z_Xd8P3OsqTMhTuM0GdtPPUInBIVqoMeSoTPLQI3L6fY53Vdu1zd1oZwKZjwjb8GovZQo245skHR4IvGMw4I9otZIZ3LV5oMrXhWVbSOtWaGQz7us"/><div class="hidden sm:flex flex-col"><span class="font-label-md text-label-md text-on-surface font-semibold leading-tight">Aarav Sharma</span><span class="font-label-sm text-label-sm text-on-surface-variant">Grade 10-A</span></div></div></div></div><div class="flex items-center justify-between pt-1 mt-1"><div class="flex items-center gap-1.5 overflow-hidden"><span class="font-label-sm text-label-sm text-on-surface-variant">Academics</span><span class="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span><span class="font-label-sm text-label-sm text-primary truncate font-semibold">Student Leave Hub</span></div><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-medium"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>AY 2024–25</span></div></div></header><main class="flex-1 flex flex-col relative w-full pt-24 pb-28 px-margin bg-surface"><div class="flex flex-col w-full pb-8"><!-- Top Action & Title Row -->
+<div class="flex items-center justify-between gap-space-sm mb-space-lg">
+<div class="flex items-center gap-space-sm min-w-0">
+<button aria-label="Go Back" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-transform active:scale-95 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<h1 class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight truncate">Leave Applications</h1>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Class 10-A • Roll No. 24</span>
+</div>
+</div>
+<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md font-semibold shadow-[0_4px_14px_rgba(0,97,148,0.22)] hover:bg-primary-container active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span class="">Apply Leave</span>
+</button>
+</div>
+<!-- Compact Leave Summary Pills -->
+<div class="grid grid-cols-3 gap-2.5 mb-space-lg">
+<div class="flex flex-col items-center justify-center p-3 rounded-2xl bg-surface-container-lowest shadow-[0_4px_16px_rgba(0,97,148,0.05)] border border-surface-container-high/60">
+<span class="font-headline-md text-headline-md font-bold text-tertiary">1</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Pending</span>
+</div>
+<div class="flex flex-col items-center justify-center p-3 rounded-2xl bg-surface-container-lowest shadow-[0_4px_16px_rgba(0,97,148,0.05)] border border-surface-container-high/60">
+<span class="font-headline-md text-headline-md font-bold text-secondary">4</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Approved</span>
+</div>
+<div class="flex flex-col items-center justify-center p-3 rounded-2xl bg-surface-container-lowest shadow-[0_4px_16px_rgba(0,97,148,0.05)] border border-surface-container-high/60">
+<span class="font-headline-md text-headline-md font-bold text-primary">5 d</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Balance Left</span>
+</div>
+</div>
+<!-- Active / Pending Leave Card -->
+<div class="mb-space-lg">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Current Request</span>
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-tertiary">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span> Awaiting Review
+    </span>
+</div>
+<div class="p-4 rounded-3xl bg-surface-container-lowest shadow-[0_4px_16px_rgba(0,97,148,0.06)] border border-tertiary-fixed flex flex-col gap-3">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-2xl bg-tertiary-fixed flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined text-[20px]">medical_services</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Sick / Medical Leave</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">26 Sep – 27 Sep 2026 • 2 Days</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-[11px] font-bold shrink-0">Under Review</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant bg-surface-container-low p-2.5 rounded-xl italic">
+      "High fever and viral flu symptoms. Dr. prescribed bed rest."
+    </p>
+<div class="flex items-center justify-between pt-1 border-t border-surface-container">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-outline-variant">person</span>
+<span class="">Mentor: <strong class="text-on-surface font-semibold">Mrs. R. Gupta</strong></span>
+</div>
+<button class="px-3 py-1 rounded-full text-error bg-error-container/30 hover:bg-error-container/40 font-label-sm text-label-sm font-semibold transition-colors" type="button">
+        Cancel Request
+      </button>
+</div>
+</div>
+</div>
+<!-- Past History Header & Minimal List -->
+<div class="flex flex-col gap-2.5 mb-space-lg">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Recent Applications</span>
+<button class="font-label-sm text-label-sm text-primary font-semibold hover:underline" type="button">View All</button>
+</div>
+<!-- Past Card 1 -->
+<div class="p-3.5 rounded-2xl bg-surface-container-lowest shadow-sm border border-surface-container-high/50 flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-xl bg-secondary-fixed flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[18px]">family_restroom</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md font-bold text-on-surface truncate">Family / Emergency</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">14 – 15 Aug • 2 Days</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-[11px] font-bold shrink-0">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> Approved
+    </span>
+</div>
+<!-- Past Card 2 -->
+<div class="p-3.5 rounded-2xl bg-surface-container-lowest shadow-sm border border-surface-container-high/50 flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-xl bg-secondary-fixed flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md font-bold text-on-surface truncate">Personal Leave</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">02 Jul • 1 Day</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-[11px] font-bold shrink-0">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> Approved
+    </span>
+</div>
+<!-- Past Card 3 (Rejected) -->
+<div class="p-3.5 rounded-2xl bg-surface-container-lowest shadow-sm border border-surface-container-high/50 flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-xl bg-error-container flex items-center justify-center text-error shrink-0">
+<span class="material-symbols-outlined text-[18px]">event_busy</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md font-bold text-on-surface truncate">Personal Leave</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">10 Sep • Unit Exam Conflict</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-[11px] font-bold shrink-0">
+<span class="material-symbols-outlined text-[13px]">cancel</span> Rejected
+    </span>
+</div>
+</div>
+<!-- Quick Guideline Hint -->
+<div class="flex items-center gap-2.5 p-3 rounded-2xl bg-primary-fixed/40 text-on-surface-variant text-body-sm">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">info</span>
+<span class="text-[12px] leading-snug">Submit leave at least 24h prior. Medical slip required for leaves &gt; 2 days.</span>
+</div></div>
+<script>
+  (function () {
+    // Interactive Filter Tabs
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const leaveItems = document.querySelectorAll('.leave-item');
+
+    filterTabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        // Reset classes
+        filterTabs.forEach((t) => {
+          t.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+          t.classList.add('bg-surface-container-low', 'text-on-surface-variant');
+        });
+        tab.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+        tab.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+
+        const target = tab.getAttribute('data-target');
+        leaveItems.forEach((item) => {
+          if (target === 'all') {
+            item.style.display = 'flex';
+          } else if (item.classList.contains('leave-' + target)) {
+            item.style.display = 'flex';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Character Counter on Reason field
+    const reasonField = document.getElementById('reasonField');
+    const charCounter = document.getElementById('charCounter');
+    if (reasonField && charCounter) {
+      reasonField.addEventListener('input', () => {
+        charCounter.textContent = reasonField.value.length + ' / 250';
+      });
+    }
+
+    // Quick Apply Drawer Toggle
+    const openFormBtn = document.getElementById('openFormBtn');
+    const toggleDrawerBtn = document.getElementById('toggleDrawerBtn');
+    const cancelFormBtn = document.getElementById('cancelFormBtn');
+    const quickApplyDrawer = document.getElementById('quickApplyDrawer');
+
+    const toggleDrawer = () => {
+      if (quickApplyDrawer && quickApplyDrawer.classList.contains('hidden')) {
+        quickApplyDrawer.classList.remove('hidden');
+        quickApplyDrawer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (quickApplyDrawer) {
+        quickApplyDrawer.classList.add('hidden');
+      }
+    };
+
+    if (openFormBtn) {
+      openFormBtn.addEventListener('click', () => {
+        if (quickApplyDrawer && quickApplyDrawer.classList.contains('hidden')) {
+          quickApplyDrawer.classList.remove('hidden');
+        }
+        if (quickApplyDrawer) {
+          quickApplyDrawer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
+
+    if (toggleDrawerBtn) toggleDrawerBtn.addEventListener('click', toggleDrawer);
+    if (cancelFormBtn) cancelFormBtn.addEventListener('click', toggleDrawer);
+
+    // Cancel Request confirmation micro-interaction
+    const cancelRequestBtns = document.querySelectorAll('.cancel-request-btn');
+    cancelRequestBtns.forEach((btn) => {
+      btn.addEventListener('click', function () {
+        if (confirm('Are you sure you want to cancel this pending leave request?')) {
+          const parentCard = this.closest('.leave-pending');
+          if (parentCard) {
+            parentCard.style.opacity = '0.5';
+            this.textContent = 'Cancelled';
+            this.disabled = true;
+          }
+        }
+      });
+    });
+
+    // Submission feedback toast
+    const submitLeaveBtn = document.getElementById('submitLeaveBtn');
+    if (submitLeaveBtn) {
+      submitLeaveBtn.addEventListener('click', () => {
+        submitLeaveBtn.textContent = 'Submitted ✓';
+        submitLeaveBtn.classList.remove('bg-primary');
+        submitLeaveBtn.classList.add('bg-secondary');
+        setTimeout(() => {
+          submitLeaveBtn.textContent = 'Submit Application';
+          submitLeaveBtn.classList.add('bg-primary');
+          submitLeaveBtn.classList.remove('bg-secondary');
+          if (quickApplyDrawer) quickApplyDrawer.classList.add('hidden');
+        }, 1200);
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,97,148,0.06)]" data-active-classes="text-primary font-bold"><div class="relative flex justify-around items-center h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="dashboard-leave" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm">Home</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="class-timetable" href="#"><span class="material-symbols-outlined text-[22px]">calendar_today</span><span class="font-label-sm text-label-sm">Timetable</span></a><div class="flex flex-col items-center justify-center -mt-5 min-w-[56px]"><a aria-label="Ask Schooly AI" class="w-13 h-13 w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_6px_16px_rgba(0,97,148,0.28)] hover:bg-primary-container transition-all active:scale-95" data-path="ask-schooly-ai" href="#"><span class="material-symbols-outlined text-[24px]">auto_awesome</span></a><span class="font-label-sm text-label-sm text-primary font-bold mt-1">Ask AI</span></div><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="exams-and-marks" href="#"><span class="material-symbols-outlined text-[22px]">assignment</span><span class="font-label-sm text-label-sm">Exams</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="student-menu" href="#"><span class="material-symbols-outlined text-[22px]">grid_view</span><span class="font-label-sm text-label-sm">More</span></a></div></nav>
+</body></html>

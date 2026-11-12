@@ -1,0 +1,126 @@
+<!DOCTYPE html><html class="h-full" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_tab" name="shell-type"><title>Schooly - Student Leave Module (Copy)</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "inverse-primary": "#93ccff", "tertiary": "#a33900", "surface-bright": "#faf8ff", "primary-container": "#007bb9", "outline": "#707881", "primary": "#006194", "surface-container-highest": "#dae2fd", "surface-container-low": "#f2f3ff", "surface-container-high": "#e2e7ff", "on-secondary": "#ffffff", "primary-fixed": "#cce5ff", "on-secondary-fixed-variant": "#005320", "background": "#faf8ff", "inverse-surface": "#283044", "surface-container-lowest": "#ffffff", "on-surface-variant": "#3f4850", "on-error-container": "#93000a", "on-primary-fixed": "#001d31", "on-tertiary-container": "#fffbff", "surface": "#faf8ff", "inverse-on-surface": "#eef0ff", "error-container": "#ffdad6", "outline-variant": "#bfc7d2", "on-tertiary-fixed-variant": "#7f2b00", "on-background": "#131b2e", "on-tertiary": "#ffffff", "secondary-fixed-dim": "#62df7d", "on-primary-container": "#fdfcff", "tertiary-container": "#cc4900", "on-primary": "#ffffff", "secondary-fixed": "#7ffc97", "on-secondary-fixed": "#002109", "secondary-container": "#7cf994", "on-tertiary-fixed": "#370e00", "secondary": "#006e2d", "surface-dim": "#d2d9f4", "surface-container": "#eaedff", "surface-tint": "#006398", "on-primary-fixed-variant": "#004b73", "surface-variant": "#dae2fd", "tertiary-fixed-dim": "#ffb599", "error": "#ba1a1a", "on-error": "#ffffff", "primary-fixed-dim": "#93ccff", "tertiary-fixed": "#ffdbce", "on-surface": "#131b2e", "on-secondary-container": "#007230" }, borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, spacing: { "space-xl": "1.75rem", "space-xs": "0.25rem", "space-md": "1rem", "margin": "1.25rem", "space-lg": "1.25rem", "space-sm": "0.5rem", "gutter": "1rem" }, fontFamily: { "label-lg": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "display-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"] }, fontSize: { "label-lg": ["14px", { lineHeight: "20px", fontWeight: "600" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "700" }], "label-md": ["12px", { lineHeight: "16px", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.02em", fontWeight: "700" }], "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "500" }], "display-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }], "headline-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }] } } } };</script><style>@layer base{html,body{width:100vw;min-height:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-24 px-margin flex flex-col justify-center"><div class="flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><img alt="Schooly brand logo with checkmark shield icon and modern bold typography" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VhmYOOgfjA8H4EWrvi20LrXSc2KriGgLNrcG8lnpaje84tI8QE36rdXfvRWvEgxrrNQv27CuyUp1XlHwhUY7FlWhfs6L6VCzJF1jH4HPltVZkGtOrnuQij9ZcuZapCQNVPEWtmZrySiZDZxYqhJX7Ibt6wyJHlGS1YG1M2qegNL5oXVkKDkzXx1dmmv2NnRr5fHnp9bR164btk2sUnIiUvpKPy72ljU4rY7fxFz4jNdy3mxheX9z6305R9"><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight leading-none">Schooly</span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium tracking-wide mt-0.5">STUDENT ERP</span></div></div><div class="flex items-center gap-space-sm"><button aria-label="Notifications" class="relative w-11 h-11 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest"></span></button><div class="flex items-center gap-2 pl-1"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida/AEtjO1WVSdKO-CQRqpuWCH61ZkeXLZcXYMdj3CL84fDzQK02GcstSs2rh6BKy53qh_Ts7fD0s94LGYktA8Z5uT2LwyJ_oKvqu5ZVKu6VqKTV0Mvpt5Ye6vLVJ-IKJTjONAdXqqz-GODPZy6z_Xd8P3OsqTMhTuM0GdtPPUInBIVqoMeSoTPLQI3L6fY53Vdu1zd1oZwKZjwjb8GovZQo245skHR4IvGMw4I9otZIZ3LV5oMrXhWVbSOtWaGQz7us"><div class="hidden sm:flex flex-col"><span class="font-label-md text-label-md text-on-surface font-semibold leading-tight">Aarav Sharma</span><span class="font-label-sm text-label-sm text-on-surface-variant">Grade 10-A</span></div></div></div></div><div class="flex items-center justify-between pt-1 mt-1"><div class="flex items-center gap-1.5 overflow-hidden"><span class="font-label-sm text-label-sm text-on-surface-variant">Academics</span><span class="material-symbols-outlined text-[14px] text-outline-variant">chevron_right</span><span class="font-label-sm text-label-sm text-primary truncate font-semibold">Student Leave Hub</span></div><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-medium"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>AY 2024–25</span></div></div></header><main class="flex-1 flex flex-col relative w-full pt-24 pb-28 px-margin bg-surface"><div class="flex flex-col w-full pb-6">
+<!-- Top Navigation & Profile Subtext -->
+<div class="flex items-center justify-between py-space-sm mb-space-sm">
+<div class="flex items-center gap-space-sm">
+<button aria-label="Go back to Leave Hub" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-surface-container-high transition-transform active:scale-95 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<h1 class="font-headline-md text-headline-md text-on-surface leading-tight font-bold">Apply Leave</h1>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Class 10-A • Available Quota: <span class="text-primary font-semibold">3 Casual</span>, <span class="text-secondary font-semibold">2 Sick</span></span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm flex items-center gap-1 shadow-xs">
+<span class="material-symbols-outlined text-[15px] text-primary">verified</span>
+      Aarav S.
+    </span>
+</div>
+<!-- Leave Balance Micro Pill Bar -->
+
+<!-- Interactive Form Container -->
+<form class="flex flex-col gap-space-md" id="leaveForm" onsubmit="event.preventDefault(); triggerSubmitFeedback();"><div class="bg-surface-container-lowest rounded-xl p-space-md shadow-xs flex flex-col gap-3"><label class="font-label-md text-label-md text-on-surface font-semibold">Leave Type <span class="text-error">*</span></label><div class="flex items-center gap-2 overflow-x-auto pb-1" id="leaveTypeSelector"><button type="button" class="leave-pill px-4 py-2 rounded-full font-label-md text-label-md font-semibold bg-primary text-on-primary shadow-xs transition-all active:scale-95">Medical / Sick</button><button type="button" class="leave-pill px-4 py-2 rounded-full font-label-md text-label-md font-medium bg-surface-container text-on-surface hover:bg-surface-container-high transition-all active:scale-95">Family</button><button type="button" class="leave-pill px-4 py-2 rounded-full font-label-md text-label-md font-medium bg-surface-container text-on-surface hover:bg-surface-container-high transition-all active:scale-95">Personal</button><button type="button" class="leave-pill px-4 py-2 rounded-full font-label-md text-label-md font-medium bg-surface-container text-on-surface hover:bg-surface-container-high transition-all active:scale-95">Other</button></div></div><div class="bg-surface-container-lowest rounded-xl p-space-md shadow-xs flex flex-col gap-space-sm"><div class="flex items-center justify-between"><label class="font-label-md text-label-md text-on-surface font-semibold">Dates <span class="text-error">*</span></label><span class="font-label-sm text-label-sm text-secondary font-bold bg-surface-container px-2 py-0.5 rounded-full" id="durationBadge">2 Days</span></div><div class="grid grid-cols-2 gap-space-sm"><div class="flex flex-col gap-1"><span class="font-label-sm text-label-sm text-on-surface-variant">From</span><div class="flex items-center justify-between bg-surface-container-low px-3 py-2 rounded-lg text-on-surface cursor-pointer"><span class="font-label-md text-label-md font-semibold">28 Sep 2026</span><span class="material-symbols-outlined text-[18px] text-outline">calendar_today</span></div></div><div class="flex flex-col gap-1"><span class="font-label-sm text-label-sm text-on-surface-variant">To</span><div class="flex items-center justify-between bg-surface-container-low px-3 py-2 rounded-lg text-on-surface cursor-pointer"><span class="font-label-md text-label-md font-semibold">29 Sep 2026</span><span class="material-symbols-outlined text-[18px] text-outline">event_available</span></div></div></div><div class="flex items-center justify-between pt-1 border-t border-surface-container"><span class="font-body-md text-body-md text-on-surface">Half day only</span><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="halfDayToggle" onchange="toggleHalfDay(this)" class="sr-only peer"><div class="w-10 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label></div></div><div class="bg-surface-container-lowest rounded-xl p-space-md shadow-xs flex flex-col gap-2"><label for="leaveReason" class="font-label-md text-label-md text-on-surface font-semibold">Reason <span class="text-error">*</span></label><textarea id="leaveReason" rows="2" class="w-full bg-surface-container-low text-on-surface rounded-lg p-3 font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all placeholder:text-on-surface-variant/60 resize-none" placeholder="Reason for leave (e.g. viral fever, family event)..."></textarea></div><div class="bg-surface-container-lowest rounded-xl p-3 shadow-xs"><div id="dropzoneBox" onclick="mockFileUpload()" class="cursor-pointer flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-surface-container transition-all"><div class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-[20px] text-primary shrink-0" id="uploadIcon">attach_file</span><div class="flex flex-col min-w-0"><span class="font-label-md text-label-md text-on-surface font-medium truncate" id="uploadTitle">Attach note or doctor slip</span><span class="font-label-sm text-label-sm text-on-surface-variant truncate" id="uploadSubtitle">PDF or JPG up to 5MB (Optional)</span></div></div><span class="font-label-sm text-label-sm text-primary font-semibold shrink-0">Browse</span></div></div><div class="flex flex-col gap-2 mt-1"><button id="submitBtn" type="submit" class="w-full bg-primary hover:bg-primary-container text-on-primary py-3 rounded-full font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(0,97,148,0.2)] active:scale-[0.98] transition-all"><span class="">Submit Application</span><span class="material-symbols-outlined text-[18px]">arrow_forward</span></button><button type="button" class="w-full py-1 text-center text-on-surface-variant hover:text-on-surface font-label-md text-label-md font-medium transition-colors">Cancel</button></div></form>
+<!-- Delight Micro-Modal (Hidden by default, triggered on submit) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center px-space-margin bg-on-background/40 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300" id="successModal">
+<div class="bg-surface-container-lowest rounded-xl p-space-lg w-full max-w-sm flex flex-col items-center text-center shadow-[0_16px_36px_rgba(0,97,148,0.2)] transform scale-95 transition-transform duration-300">
+<div class="w-16 h-16 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center mb-space-sm animate-bounce">
+<span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-1">Leave Applied!</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md">
+        Your application for <span class="font-bold text-on-surface">28 - 29 Sep 2026</span> has been routed to Mrs. R. Gupta.
+      </p>
+<div class="w-full bg-surface-container-low rounded-lg p-2.5 mb-space-md text-left flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Class 10-A • Available Quota: <span class="text-primary font-semibold">3 Casual</span>, <span class="text-secondary font-semibold">2 Sick</span></span>
+<span class="font-label-md text-label-md font-bold text-primary font-mono">#LV-2026-0924</span>
+</div>
+<button class="w-full bg-primary text-on-primary py-3 rounded-full font-label-lg text-label-lg font-bold shadow-md" onclick="closeModal()" type="button">
+        View Leave Status
+      </button>
+</div>
+</div>
+</div>
+<script>
+  // Leave Type Selector micro-interaction
+  const typeButtons = document.querySelectorAll('.leave-type-card');
+  typeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      typeButtons.forEach(b => {
+        b.className = 'leave-type-card flex items-center gap-2.5 p-3 rounded-lg text-left transition-all active:scale-[0.98] bg-surface-container text-on-surface hover:bg-surface-container-high';
+        const glyph = b.querySelector('.w-8');
+        glyph.className = 'w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shrink-0';
+        const sub = b.querySelectorAll('span')[1];
+        if (sub) sub.className = 'font-label-sm text-label-sm text-on-surface-variant truncate';
+      });
+
+      btn.className = 'leave-type-card flex items-center gap-2.5 p-3 rounded-lg text-left transition-all active:scale-[0.98] bg-primary text-on-primary shadow-[0_4px_12px_rgba(0,97,148,0.2)]';
+      const activeGlyph = btn.querySelector('.w-8');
+      activeGlyph.className = 'w-8 h-8 rounded-full bg-white/20 flex items-center justify-center shrink-0';
+      const activeSub = btn.querySelectorAll('span')[1];
+      if (activeSub) activeSub.className = 'font-label-sm text-label-sm opacity-90 truncate';
+    });
+  });
+
+  // Character counter helper
+  function updateCharCount(textarea) {
+    const counter = document.getElementById('charCounter');
+    counter.textContent = `${textarea.value.length} / 250`;
+  }
+
+  // Half day toggle helper
+  function toggleHalfDay(toggle) {
+    const badge = document.getElementById('durationBadge');
+    if (toggle.checked) {
+      badge.innerHTML = '<span class="material-symbols-outlined text-[14px]">timelapse</span> Total: 0.5 Day (First Half)';
+      badge.className = 'bg-tertiary-fixed text-on-tertiary-fixed font-bold px-2.5 py-0.5 rounded-full font-label-sm text-label-sm flex items-center gap-1';
+    } else {
+      badge.innerHTML = '<span class="material-symbols-outlined text-[14px]">timelapse</span> Total: 2 Days';
+      badge.className = 'bg-secondary-container text-on-secondary-container px-2.5 py-0.5 rounded-full font-label-sm text-label-sm font-bold flex items-center gap-1';
+    }
+  }
+
+  // File upload simulation
+  let uploaded = false;
+  function mockFileUpload() {
+    const box = document.getElementById('dropzoneBox');
+    const icon = document.getElementById('uploadIcon');
+    const title = document.getElementById('uploadTitle');
+    const subtitle = document.getElementById('uploadSubtitle');
+
+    if (!uploaded) {
+      icon.textContent = 'description';
+      title.textContent = 'dr_prescription_aarav.pdf';
+      subtitle.textContent = '1.2 MB • Attached successfully (Tap to replace)';
+      box.classList.add('bg-primary-fixed', 'text-on-primary-fixed');
+      uploaded = true;
+    } else {
+      icon.textContent = 'cloud_upload';
+      title.textContent = "Upload Doctor's Slip / Parent Note";
+      subtitle.textContent = 'Supports PNG, JPG, or PDF (Max 5MB)';
+      box.classList.remove('bg-primary-fixed', 'text-on-primary-fixed');
+      uploaded = false;
+    }
+  }
+
+  // Form submission micro feedback
+  function triggerSubmitFeedback() {
+    const modal = document.getElementById('successModal');
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+    modal.querySelector('div').classList.remove('scale-95');
+    modal.querySelector('div').classList.add('scale-100');
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('successModal');
+    modal.classList.add('opacity-0', 'pointer-events-none');
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,97,148,0.06)]" data-active-classes="text-primary font-bold"><div class="relative flex justify-around items-center h-16 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="dashboard-leave" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-sm text-label-sm">Home</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="class-timetable" href="#"><span class="material-symbols-outlined text-[22px]">calendar_today</span><span class="font-label-sm text-label-sm">Timetable</span></a><div class="flex flex-col items-center justify-center -mt-5 min-w-[56px]"><a aria-label="Ask Schooly AI" class="w-13 h-13 w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[0_6px_16px_rgba(0,97,148,0.28)] hover:bg-primary-container transition-all active:scale-95" data-path="ask-schooly-ai" href="#"><span class="material-symbols-outlined text-[24px]">auto_awesome</span></a><span class="font-label-sm text-label-sm text-primary font-bold mt-1">Ask AI</span></div><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="exams-and-marks" href="#"><span class="material-symbols-outlined text-[22px]">assignment</span><span class="font-label-sm text-label-sm">Exams</span></a><a class="flex flex-col items-center justify-center min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-on-surface transition-colors gap-0.5" data-path="student-menu" href="#"><span class="material-symbols-outlined text-[22px]">grid_view</span><span class="font-label-sm text-label-sm">More</span></a></div></nav>
+
+
+</body></html>
