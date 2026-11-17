@@ -1,483 +1,565 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/theme/app_colors.dart';
+import '../data/models/parent_models.dart';
+import '../providers/parent_providers.dart';
+import '../more/child_switcher_sheet.dart';
 
-class ParentAttendanceScreen extends StatelessWidget {
+class ParentAttendanceScreen extends ConsumerStatefulWidget {
   const ParentAttendanceScreen({super.key});
+
+  @override
+  ConsumerState<ParentAttendanceScreen> createState() => _ParentAttendanceScreenState();
+}
+
+class _ParentAttendanceScreenState extends ConsumerState<ParentAttendanceScreen> {
+  late DateTime _selectedMonth;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _selectedMonth = DateTime(now.year, now.month, 1);
+  }
+
+  void _previousMonth() {
+    setState(() {
+      _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month - 1, 1);
+    });
+  }
+
+  void _nextMonth() {
+    setState(() {
+      _selectedMonth = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
+    });
+  }
+
+  String _formatMonthYear(DateTime date) {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return '${months[date.month - 1]} ${date.year}';
+  }
+
+  String _formatDateIso(DateTime date) {
+    final y = date.year.toString().padLeft(4, '0');
+    final m = date.month.toString().padLeft(2, '0');
+    final d = date.day.toString().padLeft(2, '0');
+    return '$y-$m-$d';
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final activeChild = ref.watch(selectedChildProvider);
+    final childrenAsync = ref.watch(parentChildrenProvider);
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: colorScheme.surface.withValues(alpha: 0.85),
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 1,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+        title: Text(
+          'Attendance Records',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.calendar_today,
-                color: colorScheme.onPrimaryContainer,
-                size: 22,
-              ),
+      ),
+      body: childrenAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, _) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.error_outline, size: 48, color: colorScheme.error),
+                const SizedBox(height: 12),
+                Text(
+                  'Failed to load wards',
+                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  err.toString(),
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                ),
+                const SizedBox(height: 16),
+                FilledButton.tonal(
+                  onPressed: () => ref.invalidate(parentChildrenProvider),
+                  child: const Text('Retry'),
+                ),
+              ],
             ),
-            const SizedBox(width: 10),
-            Column(
+          ),
+        ),
+        data: (children) {
+          if (children.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.family_restroom, size: 56, color: colorScheme.outlineVariant),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No Wards Found',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'No students are currently linked to this parent account.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          final effectiveChild = activeChild ?? children.first;
+
+          // Compute start and end dates for the selected month
+          final startDate = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
+          final lastDayInt = DateTime(_selectedMonth.year, _selectedMonth.month + 1, 0).day;
+          final endDate = DateTime(_selectedMonth.year, _selectedMonth.month, lastDayInt);
+
+          final attendanceParams = (
+            studentId: effectiveChild.studentId,
+            schoolId: effectiveChild.schoolId,
+            startDate: _formatDateIso(startDate),
+            endDate: _formatDateIso(endDate),
+          );
+
+          final attendanceAsync = ref.watch(childAttendanceProvider(attendanceParams));
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'PARENT PORTAL',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                    fontSize: 9,
-                  ),
-                ),
-                Text(
-                  'Attendance',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: Stack(
-              children: [
-                const Icon(Icons.notifications_outlined),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFA33900),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            onPressed: () {},
-          ),
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHigh,
-              shape: BoxShape.circle,
-            ),
-            child: const CircleAvatar(
-              radius: 14,
-              backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=11'),
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 100),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. Child context pill
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(50),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 4,
-                      offset: const Offset(0, 1),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Color(0xFFCCE5FF),
-                      child: Text(
-                        'AP',
-                        style: TextStyle(
-                          color: Color(0xFF006194),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Text(
-                            'Arun Patel',
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '•',
-                            style: TextStyle(color: colorScheme.outline),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Class 7-A',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainer,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.swap_horiz,
-                            size: 14,
-                            color: colorScheme.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Switch',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: colorScheme.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // 2. Month Header & Rate
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'September 2026',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: colorScheme.primary,
-                        size: 24,
+                // 1. Child Selection Card
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                  Text(
-                    '92% Rate',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme
-                          .secondary, // Assuming secondary is a green-ish color for Good Standing
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor: colorScheme.primaryContainer,
+                        child: Text(
+                          effectiveChild.initials,
+                          style: TextStyle(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              effectiveChild.name,
+                              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              '${effectiveChild.className} • Adm: ${effectiveChild.admissionNo}',
+                              style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (children.length > 1)
+                        TextButton.icon(
+                          onPressed: () async {
+                            final selected = await showChildSwitcherSheet(
+                              context,
+                              children: children,
+                              selectedChild: effectiveChild,
+                            );
+                            if (selected != null) {
+                              ref.read(selectedChildProvider.notifier).selectChild(selected);
+                            }
+                          },
+                          icon: const Icon(Icons.swap_horiz, size: 16),
+                          label: const Text('Switch'),
+                        ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // 2. Month Selector & Rate Header
+                attendanceAsync.when(
+                  loading: () => const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: CircularProgressIndicator(),
                     ),
                   ),
-                ],
-              ),
-            ),
-
-            // 3. Calendar Grid
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 16,
-                      offset: const Offset(0, 4),
+                  error: (err, _) => Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: colorScheme.errorContainer.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: colorScheme.error.withValues(alpha: 0.4)),
                     ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    // Day headers
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: ['M', 'T', 'W', 'T', 'F', 'S', 'S']
-                          .map(
-                            (d) => SizedBox(
-                              width: 36,
+                    child: Row(
+                      children: [
+                        Icon(Icons.warning_amber_rounded, color: colorScheme.error),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Failed to load attendance: $err',
+                            style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.error),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.refresh),
+                          onPressed: () => ref.invalidate(childAttendanceProvider(attendanceParams)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  data: (records) {
+                    final recordMap = <int, ParentAttendanceRecord>{};
+                    for (final r in records) {
+                      final parsed = DateTime.tryParse(r.attendanceDate);
+                      if (parsed != null && parsed.year == _selectedMonth.year && parsed.month == _selectedMonth.month) {
+                        recordMap[parsed.day] = r;
+                      }
+                    }
+
+                    int presentCount = 0;
+                    int absentCount = 0;
+                    int lateCount = 0;
+                    int excusedCount = 0;
+
+                    for (final r in recordMap.values) {
+                      final st = r.status.toUpperCase();
+                      if (st == 'PRESENT') {
+                        presentCount++;
+                      } else if (st == 'ABSENT') {
+                        absentCount++;
+                      } else if (st == 'LATE') {
+                        lateCount++;
+                      } else if (st == 'EXCUSED' || st == 'LEAVE') {
+                        excusedCount++;
+                      }
+                    }
+
+                    final totalMarked = presentCount + absentCount + lateCount + excusedCount;
+                    final attendancePct = totalMarked > 0
+                        ? (((presentCount + lateCount) / totalMarked) * 100).round()
+                        : 0;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Month Navigation Bar
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.chevron_left),
+                                  onPressed: _previousMonth,
+                                ),
+                                Text(
+                                  _formatMonthYear(_selectedMonth),
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.chevron_right),
+                                  onPressed: _nextMonth,
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               child: Text(
-                                d,
-                                textAlign: TextAlign.center,
+                                totalMarked > 0 ? '$attendancePct% Rate' : 'N/A',
                                 style: theme.textTheme.labelMedium?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.w600,
+                                  color: colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
-                          )
-                          .toList(),
-                    ),
-                    const SizedBox(height: 12),
+                          ],
+                        ),
 
-                    // Calendar grid
-                    GridView.count(
-                      crossAxisCount: 7,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      childAspectRatio: 1.0,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      children: [
-                        // Week 1 (Starts on Tuesday in Sept 2026)
-                        const SizedBox(),
-                        _buildDayCell('1', 'P', colorScheme),
-                        _buildDayCell('2', 'P', colorScheme),
-                        _buildDayCell('3', 'P', colorScheme),
-                        _buildDayCell('4', 'P', colorScheme),
-                        _buildDayCell('5', '-', colorScheme),
-                        _buildDayCell('6', '-', colorScheme),
-                        // Week 2
-                        _buildDayCell('7', 'P', colorScheme),
-                        _buildDayCell('8', 'P', colorScheme),
-                        _buildDayCell('9', 'P', colorScheme),
-                        _buildDayCell('10', 'A', colorScheme),
-                        _buildDayCell('11', 'P', colorScheme),
-                        _buildDayCell('12', '-', colorScheme),
-                        _buildDayCell('13', '-', colorScheme),
-                        // Week 3
-                        _buildDayCell('14', 'P', colorScheme),
-                        _buildDayCell('15', 'L', colorScheme),
-                        _buildDayCell('16', 'P', colorScheme),
-                        _buildDayCell('17', 'P', colorScheme),
-                        _buildDayCell('18', 'P', colorScheme),
-                        _buildDayCell('19', '-', colorScheme),
-                        _buildDayCell('20', '-', colorScheme),
-                        // Week 4
-                        _buildDayCell('21', 'P', colorScheme),
-                        _buildDayCell('22', 'P', colorScheme),
-                        _buildDayCell('23', 'P', colorScheme),
-                        _buildDayCell('24', 'P', colorScheme, isToday: true),
-                        _buildDayCell('25', 'F', colorScheme),
-                        _buildDayCell('26', '-', colorScheme),
-                        _buildDayCell('27', '-', colorScheme),
-                        // Week 5
-                        _buildDayCell('28', 'F', colorScheme),
-                        _buildDayCell('29', 'F', colorScheme),
-                        _buildDayCell('30', 'F', colorScheme),
-                        const SizedBox(),
-                        const SizedBox(),
-                        const SizedBox(),
-                        const SizedBox(),
+                        const SizedBox(height: 12),
+
+                        // Summary Statistics Chips
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildMetricTile(
+                                label: 'Present',
+                                count: presentCount,
+                                color: Colors.green,
+                                icon: Icons.check_circle_outline,
+                                context: context,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _buildMetricTile(
+                                label: 'Absent',
+                                count: absentCount,
+                                color: Colors.red,
+                                icon: Icons.cancel_outlined,
+                                context: context,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _buildMetricTile(
+                                label: 'Late/Leave',
+                                count: lateCount + excusedCount,
+                                color: Colors.orange,
+                                icon: Icons.schedule_outlined,
+                                context: context,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Dynamic Monthly Calendar Grid
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceContainerLowest,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.04),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              // Weekday headers (M, T, W, T, F, S, S)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                                    .map(
+                                      (d) => SizedBox(
+                                        width: 36,
+                                        child: Text(
+                                          d,
+                                          textAlign: TextAlign.center,
+                                          style: theme.textTheme.labelSmall?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Dynamic Day Grid
+                              _buildCalendarGrid(
+                                month: _selectedMonth,
+                                recordMap: recordMap,
+                                colorScheme: colorScheme,
+                                theme: theme,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        if (records.isEmpty) ...[
+                          const SizedBox(height: 16),
+                          Center(
+                            child: Text(
+                              'No attendance entries found for this month.',
+                              style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                            ),
+                          ),
+                        ],
                       ],
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              ),
+              ],
             ),
-
-            const SizedBox(height: 24),
-
-            // 4. Month Summary Chips
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _buildSummaryChip(
-                      '22 Days',
-                      'Present',
-                      Icons.check_circle,
-                      colorScheme.secondary,
-                      colorScheme.secondaryContainer,
-                      colorScheme,
-                      theme,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildSummaryChip(
-                      '2 Days',
-                      'Absent',
-                      Icons.cancel,
-                      colorScheme.error,
-                      colorScheme.errorContainer,
-                      colorScheme,
-                      theme,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _buildSummaryChip(
-                      '1 Day',
-                      'Leave',
-                      Icons.event_busy,
-                      colorScheme.tertiary,
-                      colorScheme.tertiaryContainer,
-                      colorScheme,
-                      theme,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildDayCell(
-    String day,
-    String status,
-    ColorScheme colorScheme, {
-    bool isToday = false,
+  Widget _buildMetricTile({
+    required String label,
+    required int count,
+    required Color color,
+    required IconData icon,
+    required BuildContext context,
   }) {
-    final isWeekend = status == '-';
-    final isFuture = status == 'F';
-
-    Color bgColor = Colors.transparent;
-    Color textColor = colorScheme.onSurface;
-    Color borderColor = Colors.transparent;
-
-    if (isToday) {
-      bgColor = colorScheme.primary;
-      textColor = colorScheme.onPrimary;
-    } else if (status == 'P') {
-      bgColor = colorScheme.secondaryContainer.withValues(alpha: 0.5);
-      textColor = colorScheme.secondary;
-      borderColor = colorScheme.secondary.withValues(alpha: 0.2);
-    } else if (status == 'A') {
-      bgColor = colorScheme.errorContainer.withValues(alpha: 0.5);
-      textColor = colorScheme.error;
-      borderColor = colorScheme.error.withValues(alpha: 0.2);
-    } else if (status == 'L') {
-      bgColor = colorScheme.tertiaryContainer.withValues(alpha: 0.5);
-      textColor = colorScheme.tertiary;
-      borderColor = colorScheme.tertiary.withValues(alpha: 0.2);
-    } else if (isWeekend) {
-      textColor = colorScheme.outline;
-    } else if (isFuture) {
-      textColor = colorScheme.outline;
-    }
-
+    final theme = Theme.of(context);
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: bgColor,
-        shape: BoxShape.circle,
-        border: borderColor != Colors.transparent
-            ? Border.all(color: borderColor)
-            : null,
-      ),
-      child: Center(
-        child: Text(
-          day,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: (isWeekend || isFuture)
-                ? FontWeight.normal
-                : FontWeight.bold,
-            color: textColor,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSummaryChip(
-    String title,
-    String subtitle,
-    IconData icon,
-    Color iconColor,
-    Color bgColor,
-    ColorScheme colorScheme,
-    ThemeData theme,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.surfaceContainer),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: bgColor.withValues(alpha: 0.5),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 16, color: iconColor),
-          ),
+          Icon(icon, size: 20, color: color),
           const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  count.toString(),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
                 ),
-              ),
-              Text(
-                subtitle,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontSize: 10,
+                Text(
+                  label,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCalendarGrid({
+    required DateTime month,
+    required Map<int, ParentAttendanceRecord> recordMap,
+    required ColorScheme colorScheme,
+    required ThemeData theme,
+  }) {
+    final firstWeekday = DateTime(month.year, month.month, 1).weekday; // 1 = Mon, 7 = Sun
+    final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
+
+    final cells = <Widget>[];
+
+    // Leading empty slots
+    for (int i = 1; i < firstWeekday; i++) {
+      cells.add(const SizedBox());
+    }
+
+    // Days of the month
+    final now = DateTime.now();
+    final isCurrentMonth = now.year == month.year && now.month == month.month;
+
+    for (int day = 1; day <= daysInMonth; day++) {
+      final record = recordMap[day];
+      final isToday = isCurrentMonth && now.day == day;
+
+      Color? bgColor;
+      Color textColor = colorScheme.onSurface;
+      String statusInitial = '';
+
+      if (record != null) {
+        final st = record.status.toUpperCase();
+        if (st == 'PRESENT') {
+          bgColor = Colors.green.withValues(alpha: 0.15);
+          textColor = Colors.green.shade800;
+          statusInitial = 'P';
+        } else if (st == 'ABSENT') {
+          bgColor = Colors.red.withValues(alpha: 0.15);
+          textColor = Colors.red.shade800;
+          statusInitial = 'A';
+        } else if (st == 'LATE') {
+          bgColor = Colors.orange.withValues(alpha: 0.15);
+          textColor = Colors.orange.shade800;
+          statusInitial = 'L';
+        } else if (st == 'EXCUSED' || st == 'LEAVE') {
+          bgColor = Colors.blue.withValues(alpha: 0.15);
+          textColor = Colors.blue.shade800;
+          statusInitial = 'E';
+        }
+      }
+
+      cells.add(
+        Container(
+          decoration: BoxDecoration(
+            color: bgColor ?? (isToday ? colorScheme.primaryContainer.withValues(alpha: 0.4) : Colors.transparent),
+            borderRadius: BorderRadius.circular(8),
+            border: isToday
+                ? Border.all(color: colorScheme.primary, width: 1.5)
+                : null,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '$day',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                  color: textColor,
+                ),
+              ),
+              if (statusInitial.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  statusInitial,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+    }
+
+    return GridView.count(
+      crossAxisCount: 7,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      childAspectRatio: 1.0,
+      mainAxisSpacing: 6,
+      crossAxisSpacing: 6,
+      children: cells,
     );
   }
 }

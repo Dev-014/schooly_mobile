@@ -1,65 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../providers/parent_providers.dart';
 import 'child_switcher_sheet.dart';
 
-class ParentMoreScreen extends StatefulWidget {
+class ParentMoreScreen extends ConsumerStatefulWidget {
   const ParentMoreScreen({super.key});
 
   @override
-  State<ParentMoreScreen> createState() => _ParentMoreScreenState();
+  ConsumerState<ParentMoreScreen> createState() => _ParentMoreScreenState();
 }
 
-class _ParentMoreScreenState extends State<ParentMoreScreen> {
-  // Sample children data – in a real app this comes from the auth/parent provider
-  final List<ChildInfo> _children = const [
-    ChildInfo(
-      name: 'Arun Sharma',
-      initials: 'AS',
-      className: 'Class 7-A',
-      rollNo: 14,
-      school: 'DPS Main',
-      house: 'Tagore House',
-      attendancePct: 96,
-      isSelected: true,
-    ),
-    ChildInfo(
-      name: 'Priya Sharma',
-      initials: 'PS',
-      className: 'Class 4-B',
-      rollNo: 22,
-      school: 'DPS Main',
-      house: 'Gandhi House',
-      attendancePct: 88,
-    ),
-  ];
-
-  late ChildInfo _selectedChild;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedChild = _children.firstWhere(
-      (c) => c.isSelected,
-      orElse: () => _children.first,
-    );
-  }
-
-  Future<void> _openChildSwitcher() async {
-    final result = await showChildSwitcherSheet(
-      context,
-      children: _children,
-      selectedChild: _selectedChild,
-    );
-    if (result != null && mounted) {
-      setState(() => _selectedChild = result);
-    }
-  }
-
+class _ParentMoreScreenState extends ConsumerState<ParentMoreScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final activeChild = ref.watch(selectedChildProvider);
+    final childrenAsync = ref.watch(parentChildrenProvider);
+    final children = childrenAsync.value ?? [];
+
+    final effectiveChild = activeChild ?? (children.isNotEmpty ? children.first : null);
+
+    Future<void> openChildSwitcher() async {
+      if (children.isEmpty) return;
+      final result = await showChildSwitcherSheet(
+        context,
+        children: children,
+        selectedChild: effectiveChild,
+      );
+      if (result != null) {
+        ref.read(selectedChildProvider.notifier).selectChild(result);
+      }
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -125,71 +99,6 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search Bar & Settings
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 4,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search modules, fees, notices...',
-                        hintStyle: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: colorScheme.primary,
-                          size: 20,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceContainerLowest,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.settings,
-                      color: colorScheme.onSurfaceVariant,
-                      size: 20,
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
             // Profile & Switch Children Strip
             GestureDetector(
               onTap: () => context.push('/student/profile'),
@@ -229,9 +138,9 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        // Switch button — opens the bottom sheet
+                        // Switch button
                         GestureDetector(
-                          onTap: _openChildSwitcher,
+                          onTap: openChildSwitcher,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,
@@ -263,279 +172,175 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Stack(
-                          children: [
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: colorScheme.primary.withValues(
-                                    alpha: 0.2,
-                                  ),
-                                  width: 2,
-                                ),
-                                color: AppColors.primaryFixed,
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                _selectedChild.initials,
-                                style: TextStyle(
-                                  color: colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                width: 16,
-                                height: 16,
+                    if (effectiveChild == null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          'No child profile linked to this parent account.',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      )
+                    else
+                      Row(
+                        children: [
+                          Stack(
+                            children: [
+                              Container(
+                                width: 48,
+                                height: 48,
                                 decoration: BoxDecoration(
-                                  color: colorScheme.secondary,
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: AppColors.surfaceContainerLowest,
+                                    color: colorScheme.primary.withValues(
+                                      alpha: 0.2,
+                                    ),
                                     width: 2,
                                   ),
+                                  color: AppColors.primaryFixed,
                                 ),
-                                child: const Icon(
-                                  Icons.check,
-                                  color: AppColors.onSecondary,
-                                  size: 10,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  effectiveChild.initials,
+                                  style: TextStyle(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    _selectedChild.name,
-                                    style: theme.textTheme.titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: colorScheme.primaryContainer,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      _selectedChild.className,
-                                      style: theme.textTheme.labelSmall
-                                          ?.copyWith(
-                                            fontSize: 9,
-                                            color:
-                                                colorScheme.onPrimaryContainer,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  width: 16,
+                                  height: 16,
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.secondary,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppColors.surfaceContainerLowest,
+                                      width: 2,
                                     ),
                                   ),
-                                ],
+                                  child: const Icon(
+                                    Icons.check,
+                                    color: AppColors.onSecondary,
+                                    size: 10,
+                                  ),
+                                ),
                               ),
-                              const SizedBox(height: 4),
-                              RichText(
-                                text: TextSpan(
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
+                            ],
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
-                                    TextSpan(
-                                      text: 'Roll #${_selectedChild.rollNo}',
-                                      style: TextStyle(
-                                        color: colorScheme.primary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                    Text(
+                                      effectiveChild.name,
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(fontWeight: FontWeight.bold),
                                     ),
-                                    TextSpan(
-                                      text: ' • ${_selectedChild.school}',
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: colorScheme.primaryContainer,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        effectiveChild.className,
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                              fontSize: 9,
+                                              color:
+                                                  colorScheme.onPrimaryContainer,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Profile arrow
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceContainerLowest.withValues(
-                              alpha: 0.8,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.primaryFixed),
-                          ),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Profile',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
+                                const SizedBox(height: 4),
+                                RichText(
+                                  text: TextSpan(
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: effectiveChild.rollNumber != null
+                                            ? 'Roll #${effectiveChild.rollNumber}'
+                                            : 'Adm #${effectiveChild.admissionNo}',
+                                        style: TextStyle(
+                                          color: colorScheme.primary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: ' • ${effectiveChild.house ?? "Campus Main"}',
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              Icon(
-                                Icons.arrow_forward,
-                                color: colorScheme.primary,
-                                size: 14,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                          // Profile arrow
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceContainerLowest.withValues(
+                                alpha: 0.8,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: AppColors.primaryFixed),
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Profile',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(
+                                  Icons.arrow_forward,
+                                  color: colorScheme.primary,
+                                  size: 14,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
-            // AI Parent Assistant Banner
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [colorScheme.primary, colorScheme.primaryContainer],
-                ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.primary.withValues(alpha: 0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+            // Modules 2x Grid
+            Text(
+              'Academic & School Modules',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.smart_toy,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              'Schooly AI Parent Assistant',
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.25),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Text(
-                                '24/7',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          'Get insights into your child\'s performance instantly',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontSize: 11,
-                            color: Colors.white.withValues(alpha: 0.8),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.auto_awesome,
-                      size: 14,
-                      color: colorScheme.primary,
-                    ),
-                    label: Text(
-                      'Ask AI',
-                      style: TextStyle(
-                        color: colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      minimumSize: const Size(0, 32),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Modules Section header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Modules & Services',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  '12 Hubs',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
             ),
             const SizedBox(height: 12),
 
-            // Module Grid
             GridView.count(
               crossAxisCount: 2,
               crossAxisSpacing: 10,
@@ -546,7 +351,7 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
               children: [
                 _buildGridItem(
                   'Timetable',
-                  'Today\'s Classes',
+                  'Today\'s Schedule',
                   Icons.schedule,
                   'Active',
                   AppColors.primaryFixed.withValues(alpha: 0.6),
@@ -559,9 +364,11 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
                 ),
                 _buildGridItem(
                   'Attendance',
-                  '${_selectedChild.attendancePct}% / Good',
+                  effectiveChild != null && effectiveChild.attendancePct > 0
+                      ? '${effectiveChild.attendancePct}% Rate'
+                      : 'Records & Log',
                   Icons.event_available,
-                  'Good',
+                  'Attendance',
                   colorScheme.secondaryContainer.withValues(alpha: 0.6),
                   colorScheme.onSecondaryContainer,
                   colorScheme.secondaryContainer,
@@ -572,9 +379,9 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
                 ),
                 _buildGridItem(
                   'Homework',
-                  'Maths & Science',
+                  'Assignments & Tasks',
                   Icons.menu_book,
-                  '2 Due',
+                  'Tasks',
                   AppColors.tertiaryFixed.withValues(alpha: 0.7),
                   colorScheme.tertiary,
                   AppColors.tertiaryFixed,
@@ -585,9 +392,9 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
                 ),
                 _buildGridItem(
                   'Exams & Results',
-                  'Term 1 Result Out',
+                  'Schedule & Report Cards',
                   Icons.assignment,
-                  '89.4%',
+                  'Exams',
                   AppColors.primaryFixed.withValues(alpha: 0.8),
                   colorScheme.primaryContainer,
                   colorScheme.surfaceContainerHigh,
@@ -598,9 +405,9 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
                 ),
                 _buildGridItem(
                   'Fees & Dues',
-                  '₹4,500 due',
+                  'Invoices & Payments',
                   Icons.account_balance_wallet,
-                  'Pending',
+                  'Fees',
                   colorScheme.errorContainer.withValues(alpha: 0.7),
                   colorScheme.error,
                   colorScheme.errorContainer,
@@ -613,13 +420,14 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
                   'Leave',
                   'Apply Leave',
                   Icons.event_busy,
-                  'No Active',
+                  'Active',
                   AppColors.secondaryFixed.withValues(alpha: 0.8),
                   colorScheme.onSecondaryContainer,
                   colorScheme.secondaryContainer,
                   colorScheme.onSecondaryContainer,
                   theme,
                   colorScheme,
+                  onTap: () => context.push('/parent/more/leave'),
                 ),
               ],
             ),
@@ -628,7 +436,7 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
             // List items
             _buildListItem(
               'PTM (Parent-Teacher Meeting)',
-              'Mid-Term PTM 2026',
+              'Upcoming Parent Interaction',
               Icons.groups,
               'Upcoming',
               theme,
@@ -638,166 +446,14 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
             const SizedBox(height: 10),
             _buildListItem(
               'Calendar',
-              'Holidays & Events',
+              'Holidays & School Events',
               Icons.calendar_month,
               null,
               theme,
               colorScheme,
+              onTap: () => context.push('/parent/more/calendar'),
             ),
-            const SizedBox(height: 10),
-            _buildListItem(
-              'School Bus',
-              'On Route #14',
-              Icons.directions_bus,
-              'Live',
-              theme,
-              colorScheme,
-            ),
-            const SizedBox(height: 10),
-            _buildListItem(
-              'Message Teacher',
-              '1 New Reply',
-              Icons.forum,
-              null,
-              theme,
-              colorScheme,
-              hasNotification: true,
-            ),
-
-            const SizedBox(height: 24),
-
-            // Help & Support
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceContainerLowest,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: colorScheme.surfaceContainer),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryFixed.withValues(alpha: 0.6),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          Icons.support_agent,
-                          color: colorScheme.primary,
-                          size: 22,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Help & Support Desk',
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Toll-Free: 1800-200-9988 (8AM-8PM)',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontSize: 11,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.call, size: 14),
-                    label: const Text('Call'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.secondary,
-                      foregroundColor: colorScheme.onSecondary,
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      minimumSize: const Size(0, 32),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Footer actions
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _openChildSwitcher,
-                    icon: Icon(
-                      Icons.swap_horiz,
-                      size: 16,
-                      color: colorScheme.primary,
-                    ),
-                    label: Text(
-                      'Switch Child',
-                      style: TextStyle(color: colorScheme.onSurface),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.surfaceContainerLowest,
-                      elevation: 1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.logout,
-                      size: 16,
-                      color: colorScheme.onErrorContainer,
-                    ),
-                    label: Text(
-                      'Log Out',
-                      style: TextStyle(color: colorScheme.onErrorContainer),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.errorContainer,
-                      elevation: 1,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Center(
-              child: Text(
-                'Schooly v2.4.1 • Protected by Cloud ERP',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                ),
-              ),
-            ),
-            const SizedBox(height: 100),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -808,11 +464,11 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
     String title,
     String subtitle,
     IconData icon,
-    String badgeText,
-    Color iconBg,
+    String? badge,
+    Color bgGradientStart,
     Color iconColor,
     Color badgeBg,
-    Color badgeColor,
+    Color badgeTextColor,
     ThemeData theme,
     ColorScheme colorScheme, {
     VoidCallback? onTap,
@@ -824,11 +480,13 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
         decoration: BoxDecoration(
           color: AppColors.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colorScheme.surfaceContainer),
+          border: Border.all(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.15),
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 4,
+              blurRadius: 6,
               offset: const Offset(0, 2),
             ),
           ],
@@ -841,32 +499,29 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  width: 36,
-                  height: 36,
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: iconBg,
-                    borderRadius: BorderRadius.circular(12),
+                    color: bgGradientStart,
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(icon, color: iconColor, size: 20),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: badgeBg,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    badgeText,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      fontSize: 10,
-                      color: badgeColor,
-                      fontWeight: FontWeight.bold,
+                if (badge != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: badgeBg,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      badge,
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        color: badgeTextColor,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
             Column(
@@ -874,20 +529,18 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.labelMedium?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   subtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontSize: 11,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontSize: 10,
+                  ),
                 ),
               ],
             ),
@@ -901,10 +554,9 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
     String title,
     String subtitle,
     IconData icon,
-    String? badgeText,
+    String? badge,
     ThemeData theme,
     ColorScheme colorScheme, {
-    bool hasNotification = false,
     VoidCallback? onTap,
   }) {
     return GestureDetector(
@@ -914,81 +566,56 @@ class _ParentMoreScreenState extends State<ParentMoreScreen> {
         decoration: BoxDecoration(
           color: AppColors.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: colorScheme.surfaceContainer),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: Border.all(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.15),
+          ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: colorScheme.primary, size: 20),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        fontSize: 10,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: colorScheme.primary, size: 20),
             ),
-            if (badgeText != null)
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (badge != null)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(12),
+                  color: colorScheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  badgeText,
+                  badge,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    fontSize: 10,
-                    color: colorScheme.onSecondaryContainer,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              )
-            else if (hasNotification)
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: colorScheme.secondary,
-                  shape: BoxShape.circle,
-                ),
-              )
-            else
-              Icon(
-                Icons.chevron_right,
-                color: colorScheme.outlineVariant,
-                size: 20,
               ),
+            Icon(Icons.chevron_right, color: colorScheme.outlineVariant, size: 20),
           ],
         ),
       ),

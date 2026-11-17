@@ -15,7 +15,7 @@ class TermSetupScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (ctx) => _TermFormSheet(term: term),
     ).then((_) {
-      ref.refresh(examTermsProvider.future);
+      ref.invalidate(examTermsProvider);
     });
   }
 
@@ -110,7 +110,7 @@ class TermSetupScreen extends ConsumerWidget {
                                 final repo = ref.read(examsAndResultsRepositoryProvider);
                                 try {
                                   await repo.deleteExamTerm(term['id']);
-                                  ref.refresh(examTermsProvider.future);
+                                  ref.invalidate(examTermsProvider);
                                   if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Term deleted')));
                                 } catch (e) {
                                   if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));

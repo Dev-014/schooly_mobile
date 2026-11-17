@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/parent_providers.dart';
+import '../more/child_switcher_sheet.dart';
 
-class ParentPtmScreen extends StatelessWidget {
+class ParentPtmScreen extends ConsumerWidget {
   const ParentPtmScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final activeChild = ref.watch(selectedChildProvider);
+    final childrenAsync = ref.watch(parentChildrenProvider);
+    final children = childrenAsync.value ?? [];
+    final effectiveChild = activeChild ?? (children.isNotEmpty ? children.first : null);
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -55,278 +62,130 @@ class ParentPtmScreen extends StatelessWidget {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: Stack(
-              children: [
-                const Icon(Icons.notifications_outlined),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFA33900),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            onPressed: () {},
-          ),
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHigh,
-              shape: BoxShape.circle,
-            ),
-            child: const CircleAvatar(
-              radius: 14,
-              backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=11'),
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 100),
+        padding: const EdgeInsets.only(bottom: 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Child context pill
+            // Child context pill
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(50),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 4,
-                      offset: const Offset(0, 1),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Color(0xFFCCE5FF),
-                      child: Text(
-                        'AP',
-                        style: TextStyle(
-                          color: Color(0xFF006194),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+              child: GestureDetector(
+                onTap: () async {
+                  if (children.isNotEmpty) {
+                    final selected = await showChildSwitcherSheet(
+                      context,
+                      children: children,
+                      selectedChild: effectiveChild,
+                    );
+                    if (selected != null) {
+                      ref.read(selectedChildProvider.notifier).selectChild(selected);
+                    }
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: const Color(0xFFCCE5FF),
+                        child: Text(
+                          effectiveChild?.initials ?? 'ST',
+                          style: const TextStyle(
+                            color: Color(0xFF006194),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Text(
-                            'Arun Patel',
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '•',
-                            style: TextStyle(color: colorScheme.outline),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Class 7-A',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainer,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.swap_horiz,
-                            size: 14,
-                            color: colorScheme.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Switch',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: colorScheme.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // 2. Upcoming PTM Spotlight Card
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.primary.withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            'UPCOMING PTM',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onPrimary,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.0,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.secondary,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 6,
-                                height: 6,
-                                decoration: BoxDecoration(
-                                  color: colorScheme.secondaryContainer,
-                                  shape: BoxShape.circle,
-                                ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Text(
+                              effectiveChild?.name ?? 'Select Child',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.onSurface,
                               ),
-                              const SizedBox(width: 4),
+                            ),
+                            if (effectiveChild != null) ...[
+                              const SizedBox(width: 6),
                               Text(
-                                'Confirmed',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: colorScheme.onSecondary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 11,
+                                '•',
+                                style: TextStyle(color: colorScheme.outline),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                effectiveChild.className,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Mid-Term PTM 2026',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        color: colorScheme.onPrimary,
-                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'with Mrs. R. Sharma (Class Teacher)',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onPrimary.withValues(alpha: 0.9),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainer,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.swap_horiz,
+                              size: 14,
+                              color: colorScheme.primary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Switch',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: colorScheme.primary,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_today,
-                          size: 16,
-                          color: colorScheme.primaryContainer,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '20 Sep 2026 (Sat) • 10:30 AM',
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: colorScheme.onPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          size: 16,
-                          color: colorScheme.primaryContainer,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Room 204 (Block B, 2nd Floor)',
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: colorScheme.onPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
 
-            // 3. Compact Agenda & Essential Details
+            // PTM details card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: colorScheme.surfaceContainer),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.02),
-                      blurRadius: 4,
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
                   ],
@@ -335,71 +194,90 @@ class ParentPtmScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.assignment,
-                              size: 18,
-                              color: colorScheme.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Agenda & Focus',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(12),
+                            color: colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            'Class 7-A',
+                            'Upcoming',
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: colorScheme.primary,
+                              color: colorScheme.onPrimaryContainer,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
+                        const Spacer(),
+                        Text(
+                          'Term 2 PTM',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Divider(),
-                    ),
+                    const SizedBox(height: 12),
                     Text(
-                      'Term-1 Academic Progress, Classroom Conduct & Strengths review (15 min in-person slot).',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      'Parent-Teacher Interaction Meeting',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Individual progress review with class teacher and subject coordinators.',
+                      style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
+                    ),
+                    const SizedBox(height: 14),
+                    const Divider(height: 1),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_month_outlined, size: 16, color: colorScheme.primary),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Saturday, 10:00 AM - 1:00 PM',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on_outlined, size: 16, color: colorScheme.primary),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Room 204 • Academic Block',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerLow,
+                        color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
                           Icon(
-                            Icons.info,
+                            Icons.info_outline,
                             size: 16,
                             color: colorScheme.primary,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Please carry Arun\'s School Diary and arrive 5 mins early.',
+                              'Please carry ${effectiveChild?.name.split(" ").first ?? "student"}\'s School Diary and arrive 5 mins early.',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
@@ -412,183 +290,8 @@ class ParentPtmScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-
-            // 4. Action Buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.event_available, size: 18),
-                      label: const Text('Add to Calendar'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.near_me, size: 18),
-                      label: const Text('Campus Route'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.surfaceContainerLowest,
-                        foregroundColor: colorScheme.primary,
-                        side: BorderSide(
-                          color: colorScheme.primary.withValues(alpha: 0.2),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        elevation: 0,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // 5. Past Meetings
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Past Meetings',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        '2025–26',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  _buildPastMeetingCard(
-                    'Annual PTM 2025–26',
-                    '20 Jun 2026 • Mrs. R. Sharma',
-                    colorScheme,
-                    theme,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildPastMeetingCard(
-                    'Term 1 PTM 2025–26',
-                    '15 Mar 2026 • Mr. D. Sen',
-                    colorScheme,
-                    theme,
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildPastMeetingCard(
-    String title,
-    String subtitle,
-    ColorScheme colorScheme,
-    ThemeData theme,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.surfaceContainer),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainer,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.event_available,
-                  size: 16,
-                  color: colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.check,
-                  size: 12,
-                  color: colorScheme.onSecondaryContainer,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'Attended',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSecondaryContainer,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

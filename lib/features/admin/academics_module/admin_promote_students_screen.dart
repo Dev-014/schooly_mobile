@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../student_module/data/student_repository.dart';
 import 'data/academic_providers.dart';
-import 'data/academic_repository.dart';
 
 class AdminPromoteStudentsScreen extends ConsumerStatefulWidget {
   const AdminPromoteStudentsScreen({super.key});

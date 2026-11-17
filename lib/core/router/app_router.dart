@@ -63,6 +63,7 @@ import '../../features/parent/fees/parent_fees_screen.dart';
 import '../../features/parent/attendance/parent_attendance_screen.dart';
 import '../../features/parent/homework/parent_homework_screen.dart';
 import '../../features/parent/ptm/parent_ptm_screen.dart';
+import '../../features/parent/calendar/parent_calendar_screen.dart';
 import '../../features/staff/staff_shell.dart';
 import '../../features/staff/dashboard/staff_dashboard_screen.dart';
 
@@ -419,6 +420,14 @@ GoRouter appRouter(AppRouterRef ref) {
                   GoRoute(
                     path: 'ptm',
                     builder: (context, state) => const ParentPtmScreen(),
+                  ),
+                  GoRoute(
+                    path: 'calendar',
+                    builder: (context, state) => const ParentCalendarScreen(),
+                  ),
+                  GoRoute(
+                    path: 'leave',
+                    builder: (context, state) => const StudentLeaveHubScreen(),
                   ),
                 ],
               ),

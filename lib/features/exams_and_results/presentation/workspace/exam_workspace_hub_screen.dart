@@ -155,7 +155,7 @@ class ExamWorkspaceHubScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (ctx) => const _CreateExamSheet(),
     ).then((_) {
-      ref.refresh(examSetupsProvider.future);
+      ref.invalidate(examSetupsProvider);
     });
   }
 

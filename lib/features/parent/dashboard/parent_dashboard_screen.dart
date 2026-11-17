@@ -5,6 +5,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/auth/permissions.dart';
 import '../../../core/auth/user_permissions.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../providers/parent_providers.dart';
+import '../more/child_switcher_sheet.dart';
 
 class ParentDashboardScreen extends ConsumerWidget {
   const ParentDashboardScreen({super.key});
@@ -14,6 +16,36 @@ class ParentDashboardScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final user = ref.watch(authProvider);
+    final activeChild = ref.watch(selectedChildProvider);
+    final childrenAsync = ref.watch(parentChildrenProvider);
+
+    final todayDay = const [
+      'MONDAY',
+      'TUESDAY',
+      'WEDNESDAY',
+      'THURSDAY',
+      'FRIDAY',
+      'SATURDAY',
+      'SUNDAY'
+    ][DateTime.now().weekday - 1];
+
+    final feeSummaryAsync = activeChild != null
+        ? ref.watch(childFeeSummaryProvider(activeChild.studentId))
+        : null;
+    final timetableAsync = activeChild != null
+        ? ref.watch(childTimetableProvider((
+            studentId: activeChild.studentId,
+            schoolId: activeChild.schoolId,
+            dayOfWeek: todayDay,
+          )))
+        : null;
+    final homeworkAsync = activeChild != null
+        ? ref.watch(childHomeworkProvider((
+            studentId: activeChild.studentId,
+            schoolId: activeChild.schoolId,
+          )))
+        : null;
+    final pendingFee = feeSummaryAsync?.value?.pendingAmount ?? 0.0;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -93,109 +125,115 @@ class ParentDashboardScreen extends ConsumerWidget {
             onPressed: () {},
           ),
           Container(
-            margin: const EdgeInsets.only(right: 16, left: 8),
+            margin: const EdgeInsets.only(right: 16, left: 4),
             width: 32,
             height: 32,
             decoration: BoxDecoration(
               color: colorScheme.primary,
               shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: colorScheme.primary.withValues(alpha: 0.2),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
             ),
-            child: Icon(Icons.person, color: colorScheme.onPrimary, size: 18),
+            child: Icon(
+              Icons.person,
+              color: colorScheme.onPrimary,
+              size: 18,
+            ),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 100), // Account for BottomAppBar
+        padding: const EdgeInsets.only(bottom: 120),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 12),
-
-            // 1. Header & Child Switcher Bar
+            // 1. Parent Hero Greeting & Ward Switcher
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Good morning, Mayur',
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          const Text('👋', style: TextStyle(fontSize: 20)),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
                       Text(
-                        'Here is Arun\'s overview for today',
+                        'Welcome Back,',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
                       ),
+                      Text(
+                        user?.name ?? 'Parent Portal',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
                     ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surface,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: colorScheme.surfaceContainer),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.02),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                  GestureDetector(
+                    onTap: () async {
+                      final children = childrenAsync.value ?? [];
+                      if (children.isNotEmpty) {
+                        final selected = await showChildSwitcherSheet(
+                          context,
+                          children: children,
+                          selectedChild: activeChild,
+                        );
+                        if (selected != null) {
+                          ref.read(selectedChildProvider.notifier).selectChild(selected);
+                        }
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: colorScheme.surfaceContainer,
                         ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFCCE5FF), // primary-fixed
-                            shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 4,
+                            offset: const Offset(0, 1),
                           ),
-                          child: Icon(
-                            Icons.face,
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 24,
+                            height: 24,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFCCE5FF),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.face,
+                              size: 16,
+                              color: colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            activeChild != null
+                                ? '${activeChild.name.split(' ').first} • ${activeChild.className}'
+                                : 'Select Child',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.arrow_drop_down,
                             size: 16,
-                            color: colorScheme.primary,
+                            color: colorScheme.onSurfaceVariant,
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Arun • 7-A',
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.arrow_drop_down,
-                          size: 16,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -204,8 +242,8 @@ class ParentDashboardScreen extends ConsumerWidget {
 
             const SizedBox(height: 16),
 
-            // 2. Action Needed Minimal Highlight Banner
-            if (user?.hasPermission(Permissions.fees.feeInvoice.view) ?? false)
+            // 2. Action Needed Minimal Highlight Banner (Only if pending fee exists)
+            if ((user?.hasPermission(Permissions.fees.feeInvoice.view) ?? false) && pendingFee > 0)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
@@ -252,9 +290,9 @@ class ParentDashboardScreen extends ConsumerWidget {
                                   fontWeight: FontWeight.w600,
                                 ),
                                 children: [
-                                  const TextSpan(text: 'Fee due in 6 days: '),
+                                  const TextSpan(text: 'Fee due: '),
                                   TextSpan(
-                                    text: '₹4,500',
+                                    text: '₹${pendingFee.toStringAsFixed(0)}',
                                     style: TextStyle(
                                       color: colorScheme.error,
                                       fontWeight: FontWeight.bold,
@@ -264,7 +302,9 @@ class ParentDashboardScreen extends ConsumerWidget {
                               ),
                             ),
                             Text(
-                              '2 tasks require attention today',
+                              feeSummaryAsync?.value?.nextDueDate != null
+                                  ? 'Due by ${feeSummaryAsync!.value!.nextDueDate}'
+                                  : 'Action required for this term',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
@@ -273,7 +313,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => context.push('/parent/dashboard/fees'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.primary,
                           foregroundColor: colorScheme.onPrimary,
@@ -303,7 +343,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                 ),
               ),
 
-            if (user?.hasPermission(Permissions.fees.feeInvoice.view) ?? false)
+            if ((user?.hasPermission(Permissions.fees.feeInvoice.view) ?? false) && pendingFee > 0)
               const SizedBox(height: 24),
 
             // 3. At a Glance (2x2 Grid)
@@ -336,16 +376,21 @@ class ParentDashboardScreen extends ConsumerWidget {
                           ) ??
                           false)
                         Expanded(
-                          child: _StatCard(
-                            title: 'Attendance',
-                            value: '92%',
-                            subtitle: ' Good',
-                            subtitleColor: const Color(0xFF006E2D), // secondary
-                            icon: Icons.verified_user,
-                            iconColor: const Color(0xFF006E2D),
-                            iconBg: const Color(
-                              0xFF7FFC97,
-                            ).withValues(alpha: 0.4), // secondary-fixed
+                          child: GestureDetector(
+                            onTap: () => context.push('/parent/more/attendance'),
+                            child: _StatCard(
+                              title: 'Attendance',
+                              value: activeChild != null && activeChild.attendancePct > 0
+                                  ? '${activeChild.attendancePct}%'
+                                  : 'N/A',
+                              subtitle: (activeChild?.attendancePct ?? 0) >= 75 ? ' Good' : ' Low',
+                              subtitleColor: const Color(0xFF006E2D),
+                              icon: Icons.verified_user,
+                              iconColor: const Color(0xFF006E2D),
+                              iconBg: const Color(
+                                0xFF7FFC97,
+                              ).withValues(alpha: 0.4),
+                            ),
                           ),
                         ),
                       if ((user?.hasPermission(
@@ -362,13 +407,18 @@ class ParentDashboardScreen extends ConsumerWidget {
                           ) ??
                           false)
                         Expanded(
-                          child: _StatCard(
-                            title: 'Homework',
-                            value: '2 Pending',
-                            valueColor: const Color(0xFFA33900), // tertiary
-                            icon: Icons.edit_document,
-                            iconColor: const Color(0xFFA33900),
-                            iconBg: const Color(0xFFFFDBCE), // tertiary-fixed
+                          child: GestureDetector(
+                            onTap: () => context.push('/parent/more/homework'),
+                            child: _StatCard(
+                              title: 'Homework',
+                              value: homeworkAsync?.value != null
+                                  ? '${homeworkAsync!.value!.where((h) => !h.isSubmitted).length} Pending'
+                                  : '0 Pending',
+                              valueColor: const Color(0xFFA33900),
+                              icon: Icons.edit_document,
+                              iconColor: const Color(0xFFA33900),
+                              iconBg: const Color(0xFFFFDBCE),
+                            ),
                           ),
                         ),
                     ],
@@ -381,15 +431,18 @@ class ParentDashboardScreen extends ConsumerWidget {
                           ) ??
                           false)
                         Expanded(
-                          child: _StatCard(
-                            title: 'Next Exam',
-                            value: '28 Sep',
-                            subtitle: ' Maths',
-                            icon: Icons.event_note,
-                            iconColor: colorScheme.primary,
-                            iconBg: const Color(
-                              0xFFCCE5FF,
-                            ).withValues(alpha: 0.6), // primary-fixed
+                          child: GestureDetector(
+                            onTap: () => context.go('/parent/exams'),
+                            child: _StatCard(
+                              title: 'Next Exam',
+                              value: 'Exams & Results',
+                              subtitle: ' View Schedule',
+                              icon: Icons.event_note,
+                              iconColor: colorScheme.primary,
+                              iconBg: const Color(
+                                0xFFCCE5FF,
+                              ).withValues(alpha: 0.6),
+                            ),
                           ),
                         ),
                       if ((user?.hasPermission(
@@ -413,9 +466,13 @@ class ParentDashboardScreen extends ConsumerWidget {
                             onTap: () => context.push('/parent/dashboard/fees'),
                             child: _StatCard(
                               title: 'Fee Due',
-                              value: '₹4,500',
+                              value: '₹${pendingFee.toStringAsFixed(0)}',
                               valueColor: colorScheme.error,
-                              subtitle: ' 30 Sep',
+                              subtitle: pendingFee > 0
+                                  ? (feeSummaryAsync?.value?.nextDueDate != null
+                                      ? ' Due: ${feeSummaryAsync!.value!.nextDueDate}'
+                                      : ' Pending')
+                                  : ' Fully Paid',
                               icon: Icons.payments,
                               iconColor: colorScheme.error,
                               iconBg: colorScheme.errorContainer,
@@ -459,7 +516,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                           ],
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () => context.go('/parent/timetable'),
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: Size.zero,
@@ -497,19 +554,26 @@ class ParentDashboardScreen extends ConsumerWidget {
                       ),
                       child: Column(
                         children: [
-                          _ClassItem(
-                            time: '09:00 AM',
-                            subject: 'Mathematics',
-                            details: 'Room 201 • Mrs. R. Gupta',
-                            isLive: true,
-                          ),
-                          const SizedBox(height: 6),
-                          _ClassItem(
-                            time: '10:00 AM',
-                            subject: 'Science',
-                            details: 'Room 105 • Mr. V. Nair',
-                            isLive: false,
-                          ),
+                          if (timetableAsync?.value != null && timetableAsync!.value!.entries.isNotEmpty)
+                            ...timetableAsync.value!.entries.take(2).map((item) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: _ClassItem(
+                                  time: '${item.startTime} - ${item.endTime}',
+                                  subject: item.subjectName,
+                                  details: '${item.roomNumber.isNotEmpty ? "Room ${item.roomNumber} • " : ""}${item.teacherName}',
+                                  isLive: item.status == 'Ongoing' || item.status == 'ACTIVE',
+                                ),
+                              );
+                            })
+                          else
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Text(
+                                'No classes scheduled for today',
+                                style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -550,6 +614,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                             iconBg: const Color(
                               0xFFCCE5FF,
                             ).withValues(alpha: 0.5),
+                            onTap: () => context.push('/parent/more/homework'),
                           ),
                         ),
                       if ((user?.hasPermission(
@@ -593,6 +658,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                             label: 'Leave',
                             iconColor: const Color(0xFFA33900),
                             iconBg: const Color(0xFFFFDBCE),
+                            onTap: () => context.push('/parent/more/leave'),
                           ),
                         ),
                       if ((user?.hasPermission(
@@ -616,6 +682,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                             iconBg: const Color(
                               0xFF7FFC97,
                             ).withValues(alpha: 0.5),
+                            onTap: () => context.go('/parent/timetable'),
                           ),
                         ),
                     ],
@@ -690,8 +757,8 @@ class _StatCard extends StatelessWidget {
                 RichText(
                   text: TextSpan(
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: valueColor ?? colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
+                      color: valueColor ?? colorScheme.onSurface,
                     ),
                     children: [
                       TextSpan(text: value),
@@ -699,11 +766,8 @@ class _StatCard extends StatelessWidget {
                         TextSpan(
                           text: subtitle,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color:
-                                subtitleColor ?? colorScheme.onSurfaceVariant,
-                            fontWeight: subtitleColor != null
-                                ? FontWeight.w600
-                                : FontWeight.normal,
+                            color: subtitleColor ?? colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                     ],
@@ -713,13 +777,12 @@ class _StatCard extends StatelessWidget {
             ),
           ),
           Container(
-            width: 36,
-            height: 36,
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: iconBg,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: iconColor, size: 20),
+            child: Icon(icon, color: iconColor, size: 18),
           ),
         ],
       ),
@@ -746,77 +809,58 @@ class _ClassItem extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: isLive
-            ? const Color(0xFFF2F3FF).withValues(alpha: 0.7)
-            : Colors.transparent,
+        color: isLive ? colorScheme.primaryContainer.withValues(alpha: 0.3) : AppColors.background,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isLive ? colorScheme.primary.withValues(alpha: 0.3) : Colors.transparent,
+        ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isLive
-                      ? const Color(0xFFCCE5FF).withValues(alpha: 0.5)
-                      : colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  time,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: isLive
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant,
+          Text(
+            time,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: isLive ? colorScheme.primary : colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  subject,
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              const SizedBox(height: 12, width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    subject,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                Text(
+                  details,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
-                  Text(
-                    details,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
           if (isLive)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: const Color(0xFF7FFC97).withValues(alpha: 0.5),
+                color: colorScheme.primary,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(
-                'Live',
+                'LIVE',
                 style: TextStyle(
-                  color: Color(0xFF006E2D),
-                  fontSize: 11,
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  fontSize: 10,
                 ),
               ),
-            )
-          else
-            Icon(
-              Icons.chevron_right,
-              size: 18,
-              color: colorScheme.outlineVariant,
             ),
         ],
       ),
@@ -829,56 +873,51 @@ class _QuickAccessItem extends StatelessWidget {
   final String label;
   final Color iconColor;
   final Color iconBg;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   const _QuickAccessItem({
     required this.icon,
     required this.label,
     required this.iconColor,
     required this.iconBg,
-    this.onTap,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: colorScheme.surfaceContainer.withValues(alpha: 0.5),
-          ),
+          borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 8,
+              blurRadius: 6,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: iconBg,
+                shape: BoxShape.circle,
+              ),
               child: Icon(icon, color: iconColor, size: 20),
             ),
             const SizedBox(height: 6),
             Text(
               label,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: colorScheme.onSurface,
+              style: theme.textTheme.labelSmall?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),

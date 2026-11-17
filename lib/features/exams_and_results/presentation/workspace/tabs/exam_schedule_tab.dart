@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../providers/exams_and_results_providers.dart';
 import '../../../data/exams_and_results_repository.dart';
-import '../../../../auth/providers/auth_provider.dart';
 
 class ExamScheduleTab extends ConsumerWidget {
   final String examId;

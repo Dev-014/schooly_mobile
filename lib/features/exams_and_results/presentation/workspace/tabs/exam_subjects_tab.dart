@@ -66,7 +66,7 @@ class ExamSubjectsTab extends ConsumerWidget {
                       ),
                       child: ListView.separated(
                         itemCount: subjects.length,
-                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        separatorBuilder: (_, _) => const Divider(height: 1),
                         itemBuilder: (context, index) {
                           final subject = subjects[index];
                           return ListTile(
@@ -96,8 +96,8 @@ class ExamSubjectsTab extends ConsumerWidget {
                                 } else if (value == 'delete') {
                                   try {
                                     await repo.removeExamSubject(intId, subject['id'], user!.schoolId!.toString());
-                                    ref.refresh(examWorkspaceSubjectsProvider(intId).future);
-                                    ref.refresh(examWorkspaceOverviewProvider(intId).future);
+                                    ref.invalidate(examWorkspaceSubjectsProvider(intId));
+                                    ref.invalidate(examWorkspaceOverviewProvider(intId));
                                   } catch (e) {
                                     if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
                                   }
@@ -140,8 +140,8 @@ class ExamSubjectsTab extends ConsumerWidget {
       isScrollControlled: true,
       builder: (ctx) => _AddSubjectSheet(examId: examId),
     ).then((_) {
-      ref.refresh(examWorkspaceSubjectsProvider(examId).future);
-      ref.refresh(examWorkspaceOverviewProvider(examId).future);
+      ref.invalidate(examWorkspaceSubjectsProvider(examId));
+      ref.invalidate(examWorkspaceOverviewProvider(examId));
     });
   }
 
@@ -151,7 +151,7 @@ class ExamSubjectsTab extends ConsumerWidget {
       isScrollControlled: true,
       builder: (ctx) => _EditConfigSheet(examId: examId, subject: subject),
     ).then((_) {
-      ref.refresh(examWorkspaceSubjectsProvider(examId).future);
+      ref.invalidate(examWorkspaceSubjectsProvider(examId));
     });
   }
 }
@@ -165,7 +165,6 @@ class _AddSubjectSheet extends ConsumerStatefulWidget {
 }
 
 class _AddSubjectSheetState extends ConsumerState<_AddSubjectSheet> {
-  final Set<int> _selectedIds = {};
 
   @override
   Widget build(BuildContext context) {

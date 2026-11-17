@@ -78,7 +78,7 @@ class ExamStudentsTab extends ConsumerWidget {
                                 final user = ref.read(authProvider);
                                 try {
                                   await repo.updateStudentStatus(intId, student['id'], val, user!.schoolId!.toString(), 'Changed via App');
-                                  ref.refresh(examWorkspaceStudentsProvider(intId).future);
+                                  ref.invalidate(examWorkspaceStudentsProvider(intId));
                                 } catch (e) {
                                   if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
                                 }
